@@ -1,0 +1,15 @@
+{
+	"geode": "v1.0.0",
+	"version": "v3.0.0",
+	"id": "fig.zbot",
+	"name": "zBot",
+	"developer": "fig",
+	"description": "Geometry Dash Replay Bot",
+	"dependencies": [
+        {
+            "id": "camila314.acbypass",
+            "version": ">=v1.0.0",
+            "required": true
+        }
+    ]
+}

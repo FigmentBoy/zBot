@@ -1,0 +1,3 @@
+[submodule "libraries/imgui-wrapper/imgui"]
+	path = libraries/imgui-wrapper/imgui
+	url = https://github.com/ocornut/imgui
