@@ -15,6 +15,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC
     src
     libraries/imgui-wrapper/imgui
+    libraries/CustomKeybinds/include
 )
 
 if (NOT DEFINED ENV{GEODE_SDK})
@@ -29,4 +30,4 @@ add_subdirectory($ENV{GEODE_SDK} $ENV{GEODE_SDK}/build)
 target_link_libraries(${PROJECT_NAME} geode-sdk imgui)
 create_geode_file(${PROJECT_NAME})
 
-add_compile_definitions(MOD_VERSION="${MOD_VERSION}")
+add_compile_definitions(MOD_VERSION="${CMAKE_PROJECT_VERSION}")

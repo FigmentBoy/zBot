@@ -1,6 +1,123 @@
 #include "gui.hpp"
+#include "zBot.hpp"
+#include <Geode/Bindings.hpp>
+#include <Geode/modify/CCLayer.hpp>
+#include <hjfod.custom-keybinds/include/Keybinds.hpp>
+using namespace geode::prelude;
 
-void GUI::renderer() {
+$execute {
+    using namespace keybinds;
+
+    BindManager::get()->registerBindable({
+        "gui_toggle"_spr,
+        "zBot Toggle",
+        "Toggles the zBot GUI",
+        { Keybind::create(KEY_B, Modifier::None) },
+        "Global",
+        false
+    });
+
+    new EventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+        if (event->isDown()) {
+            GUI* gui = GUI::get();
+            gui->visible = !gui->visible;
+        }
+
+        return ListenerResult::Propagate;
+    }, InvokeBindFilter(nullptr, "gui_toggle"_spr));
+}
+
+class $modify(CCLayer) {
+    bool init() {
+        
+
+        return CCLayer::init();
+    }
+};
+
+void GUI::renderReplayInfo() {
+    zBot* mgr = zBot::get();
+    if (mgr->currentReplay) {
+        ImGui::Text("Current Replay Name: ");
+        ImGui::SameLine();
+
+        ImGui::TextColored({ 0,255,255,255 }, mgr->currentReplay->name.c_str());
+
+        ImGui::Text("Replay FPS: ");
+        ImGui::SameLine();
+        ImGui::TextColored({ 0,255,255,255 }, "%.0f", 1 / mgr->currentReplay->delta);
+    }
+}
+
+void GUI::renderStateSwitcher() {
+    zBot* mgr = zBot::get();
+
+    ImGui::RadioButton("Disable", reinterpret_cast<int *>(&mgr->state), 0);
+    ImGui::SameLine();	
+    if (ImGui::RadioButton("Record", reinterpret_cast<int *>(&mgr->state), 1)) {
+        if (mgr->playing && !mgr->currentReplay) {
+            mgr->currentReplay = new Replay();
+            mgr->currentReplay->delta = CCDirector::sharedDirector()->getAnimationInterval();
+            mgr->currentReplay->name = GameManager::sharedState()->getPlayLayer()->m_level->m_levelName;
+        }
+
+        if (mgr->playing) {
+            mgr->currentReplay->purgeInputs(mgr->frame);
+        }
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Playback", reinterpret_cast<int *>(&mgr->state), 2)) {
+        if (!mgr->currentReplay) {
+            mgr->currentReplay = new Replay();
+            mgr->currentReplay->delta = CCDirector::sharedDirector()->getAnimationInterval();
+            mgr->currentReplay->name = "No Replay Loaded";
+        }
+    }
+}
+
+void RenderInfoPanel() {
+    zBot* mgr = zBot::get();
+
+    ImGui::SetNextWindowSize(ImVec2(200, 320), ImGuiCond_Once);
+    ImGui::SetNextWindowPos(ImVec2(385, 10), ImGuiCond_Once);
+    ImGui::Begin("utilities", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+    
+    ImGui::Text("FPS: ");
+    ImGui::SameLine();
+    ImGui::TextColored({ 0,255,255,255 }, "%.0f", 1 / (CCDirector::sharedDirector()->getAnimationInterval()));
+
+    ImGui::Text("Speed: ");
+    ImGui::SameLine();
+    ImGui::TextColored({ 0,255,255,255 }, "%.2f", mgr->speed);
+    
+    ImGui::Text("Frame: ");
+    ImGui::SameLine();
+    ImGui::TextColored({ 0,255,255,255 }, "%i", mgr->playing ? mgr->frame : 0);
+    
+
+    static float tempFPS = 1 / ((float) CCDirector::sharedDirector()->getAnimationInterval());
+    ImGui::Text("Set FPS: ");
+    ImGui::InputFloat("  ", &tempFPS);
+    if (ImGui::Button("Apply FPS")) {
+        CCDirector::sharedDirector()->setAnimationInterval(1 / tempFPS);
+    }
+
+    ImGui::NewLine();
+
+    static float tempSpeed = 1;
+    ImGui::Text("Set Speed: ");
+    ImGui::InputFloat("   ", &tempSpeed);
+    if (ImGui::Button("Apply Speedhack")) {
+        mgr->speed = tempSpeed; 
+        // if (mgr->speedhackAudio) {
+        //     zManager::setSpeedhackAudio(mgr->speed);
+        // }
+    }
+    ImGui::End();
+}
+
+
+void GUI::renderMainPanel() {
     ImGui::SetNextWindowSize(ImVec2(350, 525), ImGuiCond_Once);
 	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Once);
     ImGui::Begin("info", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
@@ -9,7 +126,57 @@ void GUI::renderer() {
     ImGui::SameLine();
     ImGui::TextColored(ImVec4(0.3f, 0.3f, 0.3f, 1.f), MOD_VERSION);
     ImGui::PopFont();
+
+    ImGui::PushFont(s);
+    renderReplayInfo();
+    renderStateSwitcher();
+
+    ImGui::NewLine();
+    ImGui::Text("Import Replay by name\n(must be in replays folder)");
+    ImGui::InputText("", location, sizeof(location));
+    
+    zBot* mgr = zBot::get();
+
+    if (ImGui::Button("Import")) {
+        Replay* rec = Replay::fromFile(location);
+        if (rec) mgr->currentReplay = rec;
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Open Replays Folder"))
+    {
+        if (CreateDirectory("replays", NULL) ||
+            ERROR_ALREADY_EXISTS == GetLastError())
+        {
+            ShellExecuteA(NULL, "open", "replays", NULL, NULL, SW_SHOWDEFAULT);
+        }
+    }
+
+    if (mgr->currentReplay) {
+        ImGui::NewLine();
+        ImGui::Text("Override Recording Name");
+        ImGui::InputText(" ", tempReplayName, sizeof(tempReplayName));
+        if (ImGui::Button("Apply")) {
+            mgr->currentReplay->name = tempReplayName;
+            memset(tempReplayName, 0, sizeof(tempReplayName));
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Manually Save to File")) {
+            mgr->currentReplay->save();
+        }
+        ImGui::NewLine();
+        ImGui::Checkbox("Ignore user input on playback", &mgr->ignoreInput);
+    }
+    
+    ImGui::PopFont();
     ImGui::End();
+}
+
+void GUI::renderer() {
+    if (!visible) return;
+    renderMainPanel();
+    RenderInfoPanel();
 }
 
 void GUI::styler() {
