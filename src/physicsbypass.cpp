@@ -7,9 +7,15 @@ class $modify(PlayLayer) {
     bool init(GJGameLevel* lvl) {
         zBot* mgr = zBot::get();
         mgr->runningTotal = 0;
+        mgr->justLoaded = true;
         mgr->playing = true;
 
         return PlayLayer::init(lvl);
+    }
+
+    void update(float delta) {
+        PlayLayer::update(delta);
+        zBot::get()->justLoaded = false;
     }
 
     void onExit() {
