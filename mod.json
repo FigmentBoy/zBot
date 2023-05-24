@@ -6,9 +6,9 @@
 	"developer": "fig",
 	"description": "Geometry Dash Replay Bot",
 	"dependencies": [
-		{
-            "id": "camila314.acbypass",
-            "version": ">=v1.0.0",
+        {
+            "id": "mat.practice-music",
+            "version": ">=v1.0.3",
             "required": true
         }, {
             "id": "hjfod.custom-keybinds",

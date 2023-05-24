@@ -18,6 +18,7 @@ public:
     }
 
     bool visible = false;
+    bool key = false;
     bool callbackInit = false;
 
     void renderReplayInfo();

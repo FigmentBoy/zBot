@@ -1,7 +1,6 @@
 #include "gui.hpp"
 #include "zBot.hpp"
 #include <Geode/Bindings.hpp>
-#include <Geode/modify/CCLayer.hpp>
 #include <hjfod.custom-keybinds/include/Keybinds.hpp>
 using namespace geode::prelude;
 
@@ -26,14 +25,6 @@ $execute {
         return ListenerResult::Propagate;
     }, InvokeBindFilter(nullptr, "gui_toggle"_spr));
 }
-
-class $modify(CCLayer) {
-    bool init() {
-        
-
-        return CCLayer::init();
-    }
-};
 
 void GUI::renderReplayInfo() {
     zBot* mgr = zBot::get();
@@ -109,13 +100,36 @@ void RenderInfoPanel() {
     ImGui::InputFloat("   ", &tempSpeed);
     if (ImGui::Button("Apply Speedhack")) {
         mgr->speed = tempSpeed; 
-        // if (mgr->speedhackAudio) {
-        //     zManager::setSpeedhackAudio(mgr->speed);
-        // }
     }
     ImGui::End();
 }
 
+void RenderHackPanel() {
+    zBot* mgr = zBot::get();
+    size_t base = (size_t)GetModuleHandle(0);
+    
+    ImGui::SetNextWindowSize(ImVec2(200, 320), ImGuiCond_Once);
+    ImGui::SetNextWindowPos(ImVec2(610, 10), ImGuiCond_Once);
+    ImGui::Begin("hacks", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+    
+    ImGui::Text("Respawn Time: ");
+    ImGui::SameLine();
+    ImGui::TextColored({ 0,255,255,255 }, "%.2f", **(float**)(base + 0x20A677));
+    
+    static float tempRT = 1;
+    ImGui::InputFloat("  ", &tempRT);
+    if (ImGui::Button("Apply")) {
+        static float* respawnTime = new float;
+        *respawnTime = tempRT;
+
+        DWORD old_prot;
+		VirtualProtect((void*)((float**)(base + 0x20A677)), sizeof(size_t), PAGE_EXECUTE_READWRITE, &old_prot);
+		*(float**)(base + 0x20A677) = respawnTime;
+		VirtualProtect((void*)((float**)(base + 0x20A677)), sizeof(size_t), old_prot, &old_prot);
+    }
+
+    ImGui::NewLine();
+}
 
 void GUI::renderMainPanel() {
     ImGui::SetNextWindowSize(ImVec2(350, 525), ImGuiCond_Once);
@@ -173,10 +187,12 @@ void GUI::renderMainPanel() {
     ImGui::End();
 }
 
+
 void GUI::renderer() {
-    if (!visible) return;
+    if (!visible || !key) return;
     renderMainPanel();
     RenderInfoPanel();
+    RenderHackPanel();
 }
 
 void GUI::styler() {

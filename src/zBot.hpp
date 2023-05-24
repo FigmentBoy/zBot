@@ -1,7 +1,8 @@
 #ifndef _zbot_hpp
 #define _zbot_hpp
 #include "replay.hpp"
-#include <Geode/cocos/cocoa/CCGeometry.h>
+#include <Geode/Bindings.hpp>
+using namespace geode::prelude;
 
 enum zState {
     NONE, RECORD, PLAYBACK
@@ -23,17 +24,20 @@ public:
     zError error = ERROR_NONE;
 
     int frame;
+    int respawnFrame;
     float runningTotal;
-    
+
+    int smoothFrames = 0;
+
     bool disableRender = false;
     bool gameLoaded = false;
     bool ignoreBypass = false;
     bool justLoaded = false;
     bool ignoreInput = false;
     bool playing = false;
-    bool practice = false;
-
-    cocos2d::CCPoint previousPosition;
+    
+    CCPoint previousPosition;
+    std::vector<GameObject*> activatedObjects;
 
     double speed = 1;
 

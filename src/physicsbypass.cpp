@@ -13,9 +13,32 @@ class $modify(PlayLayer) {
         return PlayLayer::init(lvl);
     }
 
+    void togglePracticeMode(bool practice) {
+        zBot* mgr = zBot::get();
+        mgr->runningTotal = 0;
+        mgr->justLoaded = true;
+
+        return PlayLayer::togglePracticeMode(practice);
+    }
+
+    void updateVisibility() {
+        if (!zBot::get()->disableRender) {
+            PlayLayer::updateVisibility();
+        }
+    }
+
     void update(float delta) {
+        m_shouldTryToKick = false;
+        m_antiCheatPassed = true;
         PlayLayer::update(delta);
-        zBot::get()->justLoaded = false;
+        zBot* mgr = zBot::get();
+        mgr->justLoaded = false;
+        if (mgr->smoothFrames > 0) mgr->smoothFrames--;
+    }
+
+    void resetLevel() {
+        if (m_isPracticeMode || m_isTestMode) zBot::get()->smoothFrames = 2;
+        PlayLayer::resetLevel();
     }
 
     void onExit() {
@@ -56,7 +79,7 @@ class $modify(CCScheduler) {
             newDelta = mgr->currentReplay->delta;
         }
 
-        if (mgr->justLoaded) {
+        if (mgr->justLoaded || mgr->smoothFrames > 0) {
             mgr->runningTotal = 0;
             return CCScheduler::update(newDelta * mgr->speed);
         }

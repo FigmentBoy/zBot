@@ -96,9 +96,25 @@ public:
         return nullptr;
     }
 
+    void addInput(int frame, bool click, bool p1) {
+        if (p1) p1_inputs[frame].push_back(click);
+        else p2_inputs[frame].push_back(click);
+    }
+
     void purgeInputs(int frame) {
-        p1_inputs.erase(p1_inputs.find(frame), p1_inputs.end());
-        p2_inputs.erase(p2_inputs.find(frame), p2_inputs.end());
+        for (auto it = p1_inputs.begin(); it != p1_inputs.end(); it++) {
+            if (it->first >= frame) {
+                p1_inputs.erase(it, p1_inputs.end());
+                break;
+            }
+        }
+
+        for (auto it = p2_inputs.begin(); it != p2_inputs.end(); it++) {
+            if (it->first >= frame) {
+                p2_inputs.erase(it, p2_inputs.end());
+                break;
+            }
+        }
     }
 };
 

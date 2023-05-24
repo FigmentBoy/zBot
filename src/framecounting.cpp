@@ -26,7 +26,7 @@ class $modify(PlayLayer) {
         PlayLayer::resetLevel();
 
         zBot* mgr = zBot::get();
-        mgr->frame = 0;
+        mgr->frame = mgr->respawnFrame;
         mgr->previousPosition = m_player1->m_position;
     }
 };
