@@ -54,16 +54,16 @@ class $modify(PlayLayer) {
 };
 
 class $modify(PlayerObject) {
-    void pushButton(int unk) {
+    void pushButton(PlayerButton unk) {
         zBot* mgr = zBot::get();
-        if (m_isInPlayLayer && mgr->state == RECORD) mgr->currentReplay->addInput(mgr->frame + 1, true, !m_unk684);
+        if (m_isInPlayLayer && mgr->state == RECORD) mgr->currentReplay->addInput(mgr->frame, true, !m_unk684);
 
         PlayerObject::pushButton(unk);
     }
 
-    void releaseButton(int unk) {
+    void releaseButton(PlayerButton unk) {
         zBot* mgr = zBot::get();
-        if (m_isInPlayLayer && mgr->state == RECORD) mgr->currentReplay->addInput(mgr->frame + 1, false, !m_unk684);
+        if (m_isInPlayLayer && mgr->state == RECORD) mgr->currentReplay->addInput(mgr->frame, false, !m_unk684);
 
         PlayerObject::releaseButton(unk);
     }

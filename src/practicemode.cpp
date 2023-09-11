@@ -10,16 +10,9 @@ std::vector<checkpoint> checkpoints;
 const std::vector<std::pair<size_t, size_t>> memberPairs = {
     makeMemberPair(&PlayerObject::m_xVelocity),
     makeMemberPair(&PlayerObject::m_yVelocity),
-    makeMemberPair(&PlayerObject::m_hasHitPortal),
-    makeMemberPair(&PlayerObject::m_jumpAccel),
-    makeMemberPair(&PlayerObject::m_decelerationRate),
     makeMemberPair(&PlayerObject::m_position),
     makeMemberPair(&PlayerObject::m_rotation),
-    makeMemberPair(&PlayerObject::m_objectSnappedTo),
     makeMemberPair(&PlayerObject::m_unk4D4), // isGoingDown
-    makeMemberPair(&PlayerObject::m_unk674), // hasJumped
-    makeMemberPair(&PlayerObject::m_unk675), // hasRingJumped
-    makeMemberPair(&PlayerObject::m_unk69C) // lastYVelocity
 };
 
 class $modify(PlayLayer) {
@@ -39,7 +32,7 @@ class $modify(PlayLayer) {
         zBot* mgr = zBot::get();
         checkpoint cp;
         
-        std::get<0>(cp) = mgr->frame + 1;
+        std::get<0>(cp) = mgr->frame;
         for (auto pair : memberPairs) {
             std::get<1>(cp).push_back(getValue(m_player1, pair));
             std::get<1>(cp).push_back(getValue(m_player2, pair));
@@ -48,7 +41,7 @@ class $modify(PlayLayer) {
 
         checkpoints.push_back(cp);
 
-        mgr->respawnFrame = mgr->frame + 1;
+        mgr->respawnFrame = mgr->frame;
 
         return PlayLayer::createCheckpoint();
     }
@@ -65,9 +58,12 @@ class $modify(PlayLayer) {
     void resetLevel() {
         PlayLayer::resetLevel();
 
-        if (checkpoints.empty()) return;
-
         zBot* mgr = zBot::get();
+        if (checkpoints.empty()) {
+            mgr->activatedObjects.clear();
+            return;
+        }
+
         checkpoint cp = checkpoints.back();
 
         int i = 0;
@@ -80,6 +76,7 @@ class $modify(PlayLayer) {
         for (auto object : mgr->activatedObjects) {
             object->m_hasBeenActivated = true;
         }
+
     }
 
     void onExit() {

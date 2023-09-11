@@ -1,30 +1,7 @@
 #include "gui.hpp"
 #include "zBot.hpp"
 #include <Geode/Bindings.hpp>
-#include <hjfod.custom-keybinds/include/Keybinds.hpp>
 using namespace geode::prelude;
-
-$execute {
-    using namespace keybinds;
-
-    BindManager::get()->registerBindable({
-        "gui_toggle"_spr,
-        "zBot Toggle",
-        "Toggles the zBot GUI",
-        { Keybind::create(KEY_B, Modifier::None) },
-        "Global",
-        false
-    });
-
-    new EventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
-        if (event->isDown()) {
-            GUI* gui = GUI::get();
-            gui->visible = !gui->visible;
-        }
-
-        return ListenerResult::Propagate;
-    }, InvokeBindFilter(nullptr, "gui_toggle"_spr));
-}
 
 void GUI::renderReplayInfo() {
     zBot* mgr = zBot::get();
@@ -112,21 +89,7 @@ void RenderHackPanel() {
     ImGui::SetNextWindowPos(ImVec2(610, 10), ImGuiCond_Once);
     ImGui::Begin("hacks", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
     
-    ImGui::Text("Respawn Time: ");
-    ImGui::SameLine();
-    ImGui::TextColored({ 0,255,255,255 }, "%.2f", **(float**)(base + 0x20A677));
-    
-    static float tempRT = 1;
-    ImGui::InputFloat("  ", &tempRT);
-    if (ImGui::Button("Apply")) {
-        static float* respawnTime = new float;
-        *respawnTime = tempRT;
-
-        DWORD old_prot;
-		VirtualProtect((void*)((float**)(base + 0x20A677)), sizeof(size_t), PAGE_EXECUTE_READWRITE, &old_prot);
-		*(float**)(base + 0x20A677) = respawnTime;
-		VirtualProtect((void*)((float**)(base + 0x20A677)), sizeof(size_t), old_prot, &old_prot);
-    }
+    ImGui::Checkbox("Frame Advance", &mgr->frameAdvance);
 
     ImGui::NewLine();
 }
@@ -179,8 +142,6 @@ void GUI::renderMainPanel() {
         if (ImGui::Button("Manually Save to File")) {
             mgr->currentReplay->save();
         }
-        ImGui::NewLine();
-        ImGui::Checkbox("Ignore user input on playback", &mgr->ignoreInput);
     }
     
     ImGui::PopFont();

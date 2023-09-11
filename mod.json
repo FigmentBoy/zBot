@@ -7,10 +7,6 @@
 	"description": "Geometry Dash Replay Bot",
 	"dependencies": [
         {
-            "id": "mat.practice-music",
-            "version": ">=v1.0.3",
-            "required": true
-        }, {
             "id": "hjfod.custom-keybinds",
             "version": ">=v1.0.0",
             "required": true

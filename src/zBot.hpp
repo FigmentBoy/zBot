@@ -34,6 +34,8 @@ public:
     bool ignoreBypass = false;
     bool justLoaded = false;
     bool ignoreInput = false;
+    bool frameAdvance = false;
+    bool doAdvance = false;
     bool playing = false;
     
     CCPoint previousPosition;

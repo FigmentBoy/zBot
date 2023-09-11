@@ -30,14 +30,15 @@ class $modify(PlayLayer) {
     void update(float delta) {
         m_shouldTryToKick = false;
         m_antiCheatPassed = true;
-        PlayLayer::update(delta);
+
         zBot* mgr = zBot::get();
-        mgr->justLoaded = false;
         if (mgr->smoothFrames > 0) mgr->smoothFrames--;
+
+        PlayLayer::update(delta);
     }
 
     void resetLevel() {
-        if (m_isPracticeMode || m_isTestMode) zBot::get()->smoothFrames = 2;
+        if (m_isPracticeMode || m_isTestMode) zBot::get()->smoothFrames = 3;
         PlayLayer::resetLevel();
     }
 
@@ -79,9 +80,16 @@ class $modify(CCScheduler) {
             newDelta = mgr->currentReplay->delta;
         }
 
-        if (mgr->justLoaded || mgr->smoothFrames > 0) {
+        if (mgr->justLoaded) {
             mgr->runningTotal = 0;
-            return CCScheduler::update(newDelta * mgr->speed);
+            return CCScheduler::update(newDelta);
+        }
+
+        if (mgr->playing && mgr->frameAdvance) {
+            mgr->runningTotal = 0;
+            if (!mgr->doAdvance) return;
+            mgr->doAdvance = false;
+            return CCScheduler::update(newDelta);
         }
 
         times = (int)(mgr->runningTotal * mgr->speed / newDelta);

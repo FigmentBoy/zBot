@@ -13,13 +13,15 @@ class $modify(PlayLayer) {
         return res;
     }
 
-    void update(float delta) {
+    void update(float delta) {        
+        PlayLayer::update(delta);
+
         zBot* mgr = zBot::get();
-
-        if (m_player1->m_position != mgr->previousPosition) mgr->frame++;
+        if (m_player1->m_position != mgr->previousPosition) {
+            mgr->frame++;
+            mgr->justLoaded = false;
+        }
         mgr->previousPosition = m_player1->m_position;
-
-        return PlayLayer::update(delta);
     }
 
     void resetLevel() {
