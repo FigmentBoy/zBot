@@ -14,7 +14,6 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     src
-    libraries/imgui-wrapper/imgui
     libraries/CustomKeybinds/include
 )
 
@@ -26,7 +25,9 @@ endif()
 
 add_subdirectory($ENV{GEODE_SDK} $ENV{GEODE_SDK}/build)
 
-target_link_libraries(${PROJECT_NAME} geode-sdk imgui)
+CPMAddPackage("gh:matcool/gd-imgui-cocos#cb7290b4b9b529a395330cfbe01cb6a892828215")
+
+target_link_libraries(${PROJECT_NAME} geode-sdk imgui-cocos)
 create_geode_file(${PROJECT_NAME})
 
 add_compile_definitions(MOD_VERSION="${CMAKE_PROJECT_VERSION}")

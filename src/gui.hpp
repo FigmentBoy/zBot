@@ -1,7 +1,7 @@
 #ifndef _gui_hpp
 #define _gui_hpp
 
-#include <imgui.h>
+#include <imgui-cocos.hpp>
 
 class GUI {
 private:
@@ -26,7 +26,7 @@ public:
     void renderMainPanel();
 
     void renderer();
-    void styler();
+    void setup();
 };
 
 #endif

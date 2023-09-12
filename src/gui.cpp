@@ -148,7 +148,6 @@ void GUI::renderMainPanel() {
     ImGui::End();
 }
 
-
 void GUI::renderer() {
     if (!visible || !key) return;
     renderMainPanel();
@@ -156,7 +155,7 @@ void GUI::renderer() {
     RenderHackPanel();
 }
 
-void GUI::styler() {
+void GUI::setup() {
     ImGuiStyle* style = &ImGui::GetStyle();
 
     style->WindowPadding = ImVec2(15, 15);
@@ -221,4 +220,12 @@ void GUI::styler() {
         l = io.Fonts->AddFontFromFileTTF(path.c_str(), 28.0f);
         io.Fonts->Build();
     }
+}
+
+$on_mod(Loaded) {
+    ImGuiCocos::get().setup([] {
+        GUI::get()->setup();
+    }).draw([] {
+        GUI::get()->renderer();
+    });
 }
