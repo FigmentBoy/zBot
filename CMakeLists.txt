@@ -4,8 +4,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(zBot VERSION 3.0.0)
 
-add_subdirectory(libraries/imgui-wrapper)
-
 file(GLOB SOURCES
 	src/*.cpp
 )
