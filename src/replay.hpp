@@ -1,8 +1,8 @@
 #ifndef _replay_hpp
 #define _replay_hpp
-#include <Windows.h>
+
+#include <Geode/Geode.hpp>
 #include <vector>
-#include <fstream>
 
 class Replay {
 public:
@@ -13,12 +13,11 @@ public:
     float version;
 
     void save() {
-        std::ofstream myfile;
-
-        if (CreateDirectory("replays", NULL) ||
-            ERROR_ALREADY_EXISTS == GetLastError())
-        {
-            myfile.open("replays\\" + name + ".zbf", std::ios::binary);
+        ghc::filesystem::ofstream myfile;
+        
+        auto dir = geode::prelude::dirs::getGameDir() / "replays";
+        if (ghc::filesystem::exists(dir) || ghc::filesystem::create_directory(dir)) {
+            myfile.open(dir  / (name + ".zbf"), std::ios::binary);
 
             myfile.write(reinterpret_cast<const char*>(&delta), sizeof(float));
             myfile.write(reinterpret_cast<const char*>(&version), sizeof(float));
@@ -42,10 +41,9 @@ public:
     }
 
     static Replay* fromFile(std::string filename) {
-        if (CreateDirectory("replays", NULL) ||
-            ERROR_ALREADY_EXISTS == GetLastError())
-        {
-            std::ifstream infile("replays\\" + filename + ".zbf", std::ios::binary);
+        auto dir = geode::prelude::dirs::getGameDir() / "replays";
+        if (ghc::filesystem::exists(dir) || ghc::filesystem::create_directory(dir)) {
+            ghc::filesystem::ifstream infile(dir / (filename + ".zbf"), std::ios::binary);
             if (!infile.is_open())
             {
                 return nullptr;

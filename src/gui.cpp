@@ -120,12 +120,17 @@ void GUI::renderMainPanel() {
     }
 
     ImGui::SameLine();
-    if (ImGui::Button("Open Replays Folder"))
-    {
-        if (CreateDirectory("replays", NULL) ||
-            ERROR_ALREADY_EXISTS == GetLastError())
-        {
-            ShellExecuteA(NULL, "open", "replays", NULL, NULL, SW_SHOWDEFAULT);
+    if (ImGui::Button("Open Replays Folder")) {
+        auto dir = dirs::getGameDir() / "replays";
+        if (ghc::filesystem::exists(dir) || ghc::filesystem::create_directory(dir)) {
+#ifdef GEODE_IS_WINDOWS
+            ShellExecuteA(NULL, "open", dir.string().c_str(), NULL, NULL, SW_SHOWDEFAULT);
+#endif
+
+#ifdef GEODE_IS_MAC
+            std::string command = "open " + dir.string();
+            system(command.c_str());
+#endif
         }
     }
 

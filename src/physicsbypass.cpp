@@ -63,7 +63,6 @@ class $modify(CCScheduler) {
 
         mgr->runningTotal += delta;
 
-        int times = 1;
         float newDelta = mgr->runningTotal;
 
         if (mgr->state == NONE || !mgr->playing || !mgr->currentReplay) {
@@ -71,7 +70,7 @@ class $modify(CCScheduler) {
                 mgr->runningTotal = 0;
                 return CCScheduler::update(delta * mgr->speed);
             }
-            newDelta = delta;
+            newDelta = CCDirector::sharedDirector()->getAnimationInterval();
         } else {
             if ((mgr->currentReplay->delta) <= 0) {
                 mgr->runningTotal = 0;
@@ -92,16 +91,9 @@ class $modify(CCScheduler) {
             return CCScheduler::update(newDelta);
         }
 
-        times = (int)(mgr->runningTotal * mgr->speed / newDelta);
-
-        if (newDelta / mgr->speed >= delta) {
-            if (mgr->runningTotal >= newDelta / mgr->speed) {
-                mgr->runningTotal = mgr->runningTotal - (newDelta / mgr->speed);
-                mgr->disableRender = false;
-                return CCScheduler::update(newDelta);
-            }
-        } else {
-            mgr->runningTotal -= newDelta * times;
+        if (mgr->runningTotal >= newDelta / mgr->speed) {
+            int times = (int)(mgr->runningTotal * mgr->speed / newDelta);
+            mgr->runningTotal -= newDelta / mgr->speed * times;
 
             mgr->disableRender = true;
             for (int i = 0; i < times - 1; i++) {
@@ -110,6 +102,6 @@ class $modify(CCScheduler) {
 
             mgr->disableRender = false;
             return CCScheduler::update(newDelta);
-        }
+        } 
     }
 };
