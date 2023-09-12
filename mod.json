@@ -11,5 +11,10 @@
             "version": ">=v1.0.0",
             "required": true
         }
-    ]
+    ],
+	"resources": {
+		"files": [
+			"resources/micross.ttf"
+		]
+	}
 }

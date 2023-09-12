@@ -83,7 +83,6 @@ void RenderInfoPanel() {
 
 void RenderHackPanel() {
     zBot* mgr = zBot::get();
-    size_t base = (size_t)GetModuleHandle(0);
     
     ImGui::SetNextWindowSize(ImVec2(200, 320), ImGuiCond_Once);
     ImGui::SetNextWindowPos(ImVec2(610, 10), ImGuiCond_Once);
@@ -211,20 +210,16 @@ void GUI::setup() {
     style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
     style->Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
 
-    char windows[MAX_PATH];
 
     ImGuiIO& io = ImGui::GetIO();
 
-    if (GetWindowsDirectoryA(windows, MAX_PATH)) {
-        std::string wd(windows);
-        std::string path = wd + "\\Fonts\\Micross.ttf";
-        io.Fonts->ClearFonts();
-        io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
+    auto path = (Mod::get()->getResourcesDir() / "micross.ttf").string();
+    io.Fonts->ClearFonts();
+    io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
 
-        s = io.Fonts->AddFontFromFileTTF(path.c_str(), 18.0f);
-        l = io.Fonts->AddFontFromFileTTF(path.c_str(), 28.0f);
-        io.Fonts->Build();
-    }
+    s = io.Fonts->AddFontFromFileTTF(path.c_str(), 18.0f);
+    l = io.Fonts->AddFontFromFileTTF(path.c_str(), 28.0f);
+    io.Fonts->Build();
 }
 
 $on_mod(Loaded) {
