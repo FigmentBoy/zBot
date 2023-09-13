@@ -109,7 +109,7 @@ void GUI::renderMainPanel() {
 
     ImGui::NewLine();
     ImGui::Text("Import Replay by name\n(must be in replays folder)");
-    ImGui::InputText("", location, sizeof(location));
+    ImGui::InputText("##", location, sizeof(location));
     
     zBot* mgr = zBot::get();
 
