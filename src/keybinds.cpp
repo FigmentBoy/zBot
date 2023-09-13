@@ -1,4 +1,5 @@
 #include <hjfod.custom-keybinds/include/Keybinds.hpp>
+#include <imgui-cocos.hpp>
 #include "gui.hpp"
 #include "zBot.hpp"
 #include <Geode/Bindings.hpp>
@@ -17,7 +18,7 @@ $execute {
     });
 
     new EventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
-        if (event->isDown()) {
+        if (event->isDown() && !ImGui::GetIO().WantCaptureKeyboard) {
             GUI* gui = GUI::get();
             gui->visible = !gui->visible;
         }
@@ -34,7 +35,7 @@ $execute {
     });
 
     new EventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
-        if (event->isDown()) mgr->frameAdvance = !mgr->frameAdvance;
+        if (event->isDown() && !ImGui::GetIO().WantCaptureKeyboard) mgr->frameAdvance = !mgr->frameAdvance;
 
         return ListenerResult::Propagate;
     }, InvokeBindFilter(nullptr, "frame_advance"_spr));
@@ -48,7 +49,7 @@ $execute {
     });
 
     new EventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
-        mgr->doAdvance = event->isDown();
+        mgr->doAdvance = event->isDown() && !ImGui::GetIO().WantCaptureKeyboard;
 
         return ListenerResult::Propagate;
     }, InvokeBindFilter(nullptr, "advance_frame"_spr));
