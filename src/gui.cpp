@@ -91,6 +91,7 @@ void RenderHackPanel() {
     ImGui::Checkbox("Frame Advance", &mgr->frameAdvance);
 
     ImGui::NewLine();
+    ImGui::End();
 }
 
 void GUI::renderMainPanel() {
