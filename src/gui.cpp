@@ -65,7 +65,7 @@ void RenderInfoPanel() {
 
     static float tempFPS = 1 / ((float) CCDirector::sharedDirector()->getAnimationInterval());
     ImGui::Text("Set FPS: ");
-    ImGui::InputFloat("  ", &tempFPS);
+    ImGui::InputFloat("##fps", &tempFPS);
     if (ImGui::Button("Apply FPS")) {
         CCDirector::sharedDirector()->setAnimationInterval(1 / tempFPS);
     }
@@ -74,7 +74,7 @@ void RenderInfoPanel() {
 
     static float tempSpeed = 1;
     ImGui::Text("Set Speed: ");
-    ImGui::InputFloat("   ", &tempSpeed);
+    ImGui::InputFloat("##speed", &tempSpeed);
     if (ImGui::Button("Apply Speedhack")) {
         mgr->speed = tempSpeed; 
     }
@@ -109,7 +109,7 @@ void GUI::renderMainPanel() {
 
     ImGui::NewLine();
     ImGui::Text("Import Replay by name\n(must be in replays folder)");
-    ImGui::InputText("##", location, sizeof(location));
+    ImGui::InputText("##replaylocation", location, sizeof(location));
     
     zBot* mgr = zBot::get();
 
@@ -136,7 +136,7 @@ void GUI::renderMainPanel() {
     if (mgr->currentReplay) {
         ImGui::NewLine();
         ImGui::Text("Override Recording Name");
-        ImGui::InputText(" ", tempReplayName, sizeof(tempReplayName));
+        ImGui::InputText("##replayname", tempReplayName, sizeof(tempReplayName));
         if (ImGui::Button("Apply")) {
             mgr->currentReplay->name = tempReplayName;
             memset(tempReplayName, 0, sizeof(tempReplayName));
