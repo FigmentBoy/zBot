@@ -17,7 +17,7 @@ public:
         return instance;
     }
 
-    bool visible = false;
+    bool visible = true;
     bool key = false;
     bool callbackInit = false;
 
