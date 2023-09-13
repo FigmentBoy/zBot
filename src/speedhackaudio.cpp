@@ -1,3 +1,4 @@
+#ifdef GEODE_IS_WINDOWS
 #include "zBot.hpp"
 #include <Geode/modify/FMODAudioEngine.hpp>
 using namespace geode::prelude;
@@ -13,3 +14,4 @@ class $modify(FMODAudioEngine) {
         m_currentSoundChannel->setPitch(mgr->speed);
     }
 };
+#endif
