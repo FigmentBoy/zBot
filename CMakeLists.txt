@@ -25,7 +25,12 @@ add_subdirectory($ENV{GEODE_SDK} $ENV{GEODE_SDK}/build)
 
 CPMAddPackage("gh:matcool/gd-imgui-cocos#cb7290b4b9b529a395330cfbe01cb6a892828215")
 
+if (WIN32)
 target_link_libraries(${PROJECT_NAME} geode-sdk imgui-cocos)
+elseif (APPLE)
+target_link_libraries(${PROJECT_NAME} geode-sdk imgui-cocos "-framework IOKit")
+endif()
+
 create_geode_file(${PROJECT_NAME})
 
 add_compile_definitions(MOD_VERSION="${CMAKE_PROJECT_VERSION}")
