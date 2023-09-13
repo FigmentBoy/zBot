@@ -30,7 +30,6 @@ public:
     int smoothFrames = 0;
 
     bool disableRender = false;
-    bool gameLoaded = false;
     bool ignoreBypass = false;
     bool justLoaded = false;
     bool ignoreInput = false;

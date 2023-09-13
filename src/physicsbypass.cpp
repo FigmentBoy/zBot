@@ -56,7 +56,7 @@ class $modify(CCScheduler) {
 
         mgr->speed = mgr->speed <= 0 ? 1 : mgr->speed;
 
-        if (mgr->ignoreBypass || !mgr->gameLoaded || !mgr->playing) {
+        if (mgr->ignoreBypass || !mgr->playing) {
             mgr->runningTotal = 0;
             return CCScheduler::update(delta * mgr->speed);
         }
@@ -65,7 +65,7 @@ class $modify(CCScheduler) {
 
         float newDelta = mgr->runningTotal;
 
-        if (mgr->state == NONE || !mgr->playing || !mgr->currentReplay) {
+        if (!mgr->playing || !mgr->currentReplay) {
             if (CCDirector::sharedDirector()->getAnimationInterval() <= 0) {
                 mgr->runningTotal = 0;
                 return CCScheduler::update(delta * mgr->speed);
