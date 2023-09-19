@@ -1,6 +1,9 @@
 {
-	"geode": "v1.0.0",
-	"version": "v3.0.0",
+	"geode": "v1.3.4",
+	"version": "v3.0.0-beta",
+	"tags": [
+		"Player"
+	],
 	"id": "fig.zbot",
 	"name": "zBot",
 	"developer": "fig",
