@@ -123,8 +123,7 @@ void GUI::renderMainPanel() {
     if (ImGui::Button("Open Replays Folder")) {
         auto dir = Mod::get()->getSaveDir() / "replays";
         if (ghc::filesystem::exists(dir) || ghc::filesystem::create_directory(dir)) {
-            std::string command = (std::string) GEODE_WINDOWS("explorer") GEODE_MACOS("open") + " " + dir.string();
-            system(command.c_str());
+            utils::file::openFolder(dir);
         }
     }
 
