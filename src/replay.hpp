@@ -15,7 +15,7 @@ public:
     void save() {
         ghc::filesystem::ofstream myfile;
         
-        auto dir = geode::prelude::dirs::getGameDir() / "replays";
+        auto dir = geode::prelude::Mod::get()->getSaveDir() / "replays";
         if (ghc::filesystem::exists(dir) || ghc::filesystem::create_directory(dir)) {
             myfile.open(dir  / (name + ".zbf"), std::ios::binary);
 
@@ -41,7 +41,7 @@ public:
     }
 
     static Replay* fromFile(std::string filename) {
-        auto dir = geode::prelude::dirs::getGameDir() / "replays";
+        auto dir = geode::prelude::Mod::get()->getSaveDir() / "replays";
         if (ghc::filesystem::exists(dir) || ghc::filesystem::create_directory(dir)) {
             ghc::filesystem::ifstream infile(dir / (filename + ".zbf"), std::ios::binary);
             if (!infile.is_open())

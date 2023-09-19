@@ -121,16 +121,10 @@ void GUI::renderMainPanel() {
 
     ImGui::SameLine();
     if (ImGui::Button("Open Replays Folder")) {
-        auto dir = dirs::getGameDir() / "replays";
+        auto dir = Mod::get()->getSaveDir() / "replays";
         if (ghc::filesystem::exists(dir) || ghc::filesystem::create_directory(dir)) {
-#ifdef GEODE_IS_WINDOWS
-            ShellExecuteA(NULL, "open", dir.string().c_str(), NULL, NULL, SW_SHOWDEFAULT);
-#endif
-
-#ifdef GEODE_IS_MAC
-            std::string command = "open " + dir.string();
+            std::string command = (std::string) GEODE_WINDOWS("explorer") GEODE_MACOS("open") + " " + dir.string();
             system(command.c_str());
-#endif
         }
     }
 
@@ -154,7 +148,24 @@ void GUI::renderMainPanel() {
 }
 
 void GUI::renderer() {
-    if (!visible || !key) return;
+    if (!key && zBot::get()->state != NONE && zBot::get()->playing) {
+        ImGui::PushFont(vl);
+        
+        char key1[16] = "6g6tT67BOYXNQDd";
+        char key2[16] = "f\bA\021&SSb- x4\023+\020";
+        char text[16];
+        
+        for (int i = 0; i < 16; i++) {
+            text[i] = key1[i] ^ key2[i];
+        }
+
+
+        ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+        ImGui::GetForegroundDrawList()->AddText(ImVec2((displaySize.x - ImGui::CalcTextSize(text).x) / 2.f, displaySize.y - 130), ImColor(1.f, 1.f, 1.f, 0.5), text);
+        ImGui::PopFont();
+    }
+
+    if (!visible) return;
     renderMainPanel();
     RenderInfoPanel();
     RenderHackPanel();
@@ -220,6 +231,7 @@ void GUI::setup() {
 
     s = io.Fonts->AddFontFromFileTTF(path.c_str(), 18.0f);
     l = io.Fonts->AddFontFromFileTTF(path.c_str(), 28.0f);
+    vl = io.Fonts->AddFontFromFileTTF(path.c_str(), 100.0f);
     io.Fonts->Build();
 }
 

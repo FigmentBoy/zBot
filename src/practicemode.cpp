@@ -7,7 +7,7 @@ using namespace geode::prelude;
 typedef std::tuple<int, std::vector<std::vector<std::byte>>, int> checkpoint; // frame, saved pairs, activated objects index
 std::vector<checkpoint> checkpoints;
 
-const std::vector<std::pair<size_t, size_t>> memberPairs = {
+const std::vector<std::pair<ptrdiff_t, size_t>> memberPairs = {
     makeMemberPair(&PlayerObject::m_xVelocity),
     makeMemberPair(&PlayerObject::m_yVelocity),
     makeMemberPair(&PlayerObject::m_position),

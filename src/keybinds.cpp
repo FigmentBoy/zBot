@@ -1,4 +1,4 @@
-#include <hjfod.custom-keybinds/include/Keybinds.hpp>
+#include <geode.custom-keybinds/include/Keybinds.hpp>
 #include <imgui-cocos.hpp>
 #include "gui.hpp"
 #include "zBot.hpp"

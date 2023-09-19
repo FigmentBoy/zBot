@@ -7,6 +7,7 @@ class GUI {
 private:
     ImFont* s;
     ImFont* l;
+    ImFont* vl;
 
     char location[30];
     char tempReplayName[30];
