@@ -50,3 +50,6 @@ Source/Geode/pkg/uber-apk-signer.jar
 
 # ILY vscode
 **/.vscode
+
+# geode files
+*.geode
