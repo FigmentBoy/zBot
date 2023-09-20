@@ -23,13 +23,13 @@ void GUI::renderStateSwitcher() {
     ImGui::RadioButton("Disable", reinterpret_cast<int *>(&mgr->state), 0);
     ImGui::SameLine();	
     if (ImGui::RadioButton("Record", reinterpret_cast<int *>(&mgr->state), 1)) {
-        if (mgr->playing && !mgr->currentReplay) {
+        if (PlayLayer::get() && !mgr->currentReplay) {
             mgr->currentReplay = new Replay();
             mgr->currentReplay->delta = CCDirector::sharedDirector()->getAnimationInterval();
             mgr->currentReplay->name = GameManager::sharedState()->getPlayLayer()->m_level->m_levelName;
         }
 
-        if (mgr->playing) {
+        if (PlayLayer::get()) {
             mgr->currentReplay->purgeInputs(mgr->frame);
         }
     }
@@ -60,7 +60,7 @@ void RenderInfoPanel() {
     
     ImGui::Text("Frame: ");
     ImGui::SameLine();
-    ImGui::TextColored({ 0,255,255,255 }, "%i", mgr->playing ? mgr->frame : 0);
+    ImGui::TextColored({ 0,255,255,255 }, "%i", PlayLayer::get() ? mgr->frame : 0);
     
 
     static float tempFPS = 1 / ((float) CCDirector::sharedDirector()->getAnimationInterval());
@@ -147,7 +147,7 @@ void GUI::renderMainPanel() {
 }
 
 void GUI::renderer() {
-    if (!key && zBot::get()->state != NONE && zBot::get()->playing) {
+    if (!key && zBot::get()->state != NONE && PlayLayer::get()) {
         ImGui::PushFont(vl);
         
         char key1[16] = "6g6tT67BOYXNQDd";

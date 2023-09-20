@@ -35,7 +35,6 @@ public:
     bool ignoreInput = false;
     bool frameAdvance = false;
     bool doAdvance = false;
-    bool playing = false;
     
     CCPoint previousPosition;
     std::vector<GameObject*> activatedObjects;

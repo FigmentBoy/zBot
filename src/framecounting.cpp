@@ -19,7 +19,6 @@ class $modify(PlayLayer) {
         zBot* mgr = zBot::get();
         if (m_player1->m_position != mgr->previousPosition) {
             mgr->frame++;
-            mgr->justLoaded = false;
         }
         mgr->previousPosition = m_player1->m_position;
     }

@@ -8,7 +8,6 @@ class $modify(PlayLayer) {
         zBot* mgr = zBot::get();
         mgr->runningTotal = 0;
         mgr->justLoaded = true;
-        mgr->playing = true;
 
         return PlayLayer::init(lvl);
     }
@@ -16,7 +15,6 @@ class $modify(PlayLayer) {
     void togglePracticeMode(bool practice) {
         zBot* mgr = zBot::get();
         mgr->runningTotal = 0;
-        mgr->justLoaded = true;
 
         PlayLayer::togglePracticeMode(practice);
     }
@@ -32,7 +30,7 @@ class $modify(PlayLayer) {
         m_antiCheatPassed = true;
 
         zBot* mgr = zBot::get();
-        mgr->playing = true;
+        mgr->justLoaded = false;
         if (mgr->smoothFrames > 0) mgr->smoothFrames--;
 
         PlayLayer::update(delta);
@@ -42,14 +40,6 @@ class $modify(PlayLayer) {
         if (m_isPracticeMode || m_isTestMode) zBot::get()->smoothFrames = 3;
         PlayLayer::resetLevel();
     }
-
-    void onExit() {
-        PlayLayer::onExit();
-
-        zBot* mgr = zBot::get();
-        mgr->playing = false;
-
-    }
 };
 
 class $modify(CCScheduler) {
@@ -58,7 +48,7 @@ class $modify(CCScheduler) {
 
         mgr->speed = mgr->speed <= 0 ? 1 : mgr->speed;
 
-        if (mgr->ignoreBypass || !mgr->playing) {
+        if (mgr->ignoreBypass || !PlayLayer::get()) {
             mgr->runningTotal = 0;
             return CCScheduler::update(delta * mgr->speed);
         }
@@ -67,7 +57,7 @@ class $modify(CCScheduler) {
 
         float newDelta = mgr->runningTotal;
 
-        if (!mgr->playing || !mgr->currentReplay) {
+        if (!PlayLayer::get() || !mgr->currentReplay) {
             if (CCDirector::sharedDirector()->getAnimationInterval() <= 0) {
                 mgr->runningTotal = 0;
                 return CCScheduler::update(delta * mgr->speed);
@@ -86,7 +76,7 @@ class $modify(CCScheduler) {
             return CCScheduler::update(newDelta);
         }
 
-        if (mgr->playing && mgr->frameAdvance) {
+        if (PlayLayer::get() && mgr->frameAdvance) {
             mgr->runningTotal = 0;
             if (!mgr->doAdvance) return;
             mgr->doAdvance = false;
