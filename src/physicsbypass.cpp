@@ -18,7 +18,7 @@ class $modify(PlayLayer) {
         mgr->runningTotal = 0;
         mgr->justLoaded = true;
 
-        return PlayLayer::togglePracticeMode(practice);
+        PlayLayer::togglePracticeMode(practice);
     }
 
     void updateVisibility() {
@@ -32,6 +32,7 @@ class $modify(PlayLayer) {
         m_antiCheatPassed = true;
 
         zBot* mgr = zBot::get();
+        mgr->playing = true;
         if (mgr->smoothFrames > 0) mgr->smoothFrames--;
 
         PlayLayer::update(delta);
@@ -43,10 +44,11 @@ class $modify(PlayLayer) {
     }
 
     void onExit() {
+        PlayLayer::onExit();
+
         zBot* mgr = zBot::get();
         mgr->playing = false;
 
-        return PlayLayer::onExit();
     }
 };
 
