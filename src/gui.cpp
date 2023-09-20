@@ -225,8 +225,6 @@ void GUI::setup() {
     ImGuiIO& io = ImGui::GetIO();
 
     auto path = (Mod::get()->getResourcesDir() / "micross.ttf").string();
-    io.Fonts->ClearFonts();
-    io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
 
     s = io.Fonts->AddFontFromFileTTF(path.c_str(), 18.0f);
     l = io.Fonts->AddFontFromFileTTF(path.c_str(), 28.0f);
