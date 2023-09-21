@@ -4,17 +4,20 @@
 #include <Geode/Geode.hpp>
 #include <vector>
 
+#define ZBF_VERSION 3.0f
+
 class Replay {
 public:
     std::map<int, std::vector<bool>> p1_inputs;
     std::map<int, std::vector<bool>> p2_inputs;
     float delta;
     std::string name;
-    float version;
+    float version = ZBF_VERSION;
 
     void save() {
         ghc::filesystem::ofstream myfile;
-        
+        version = ZBF_VERSION;
+
         auto dir = geode::prelude::Mod::get()->getSaveDir() / "replays";
         if (ghc::filesystem::exists(dir) || ghc::filesystem::create_directory(dir)) {
             myfile.open(dir  / (name + ".zbf"), std::ios::binary);
@@ -78,7 +81,6 @@ public:
                     rec->p2_inputs[frame].push_back(click);
                 }
             }
-
 
             infile.close();
 

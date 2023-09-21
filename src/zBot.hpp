@@ -23,6 +23,8 @@ public:
     zState state = NONE;
     zError error = ERROR_NONE;
 
+    bool fmodified = false;
+
     int frame;
     int respawnFrame;
     float runningTotal;
