@@ -19,7 +19,7 @@ void setupFolder(std::string path) {
 
 void loadClicks(std::string folder, std::vector<FMOD::Sound*>* vec, FMOD::System* sys) {
     setupFolder(folder);
-    
+
     auto dir = Mod::get()->getSaveDir() / folder;
     for (auto& entry : ghc::filesystem::directory_iterator(dir)) {
         auto file = entry.path();
@@ -36,7 +36,7 @@ using namespace geode::prelude;
 $execute {
     Mod::get()->patch(
         reinterpret_cast<void*>(geode::base::get() + GEODE_WINDOWS(0x23afe) GEODE_MACOS(0x20f140)), 
-        toByteArray((INT8) FMOD_MAX_CHANNEL_WIDTH)
+        toByteArray((char) FMOD_MAX_CHANNEL_WIDTH)
     );
 }
 
