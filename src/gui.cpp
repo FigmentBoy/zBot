@@ -1,6 +1,7 @@
 #include "gui.hpp"
 #include "zBot.hpp"
 #include <Geode/Bindings.hpp>
+#include <Geode/modify/LoadingLayer.hpp>
 using namespace geode::prelude;
 
 void GUI::renderReplayInfo() {
@@ -232,10 +233,14 @@ void GUI::setup() {
     io.Fonts->Build();
 }
 
-$on_mod(Loaded) {
-    ImGuiCocos::get().setup([] {
-        GUI::get()->setup();
-    }).draw([] {
-        GUI::get()->renderer();
-    });
-}
+class $modify(LoadingLayer) {
+    bool init(bool fromReload) {
+        ImGuiCocos::get().setup([] {
+            GUI::get()->setup();
+        }).draw([] {
+            GUI::get()->renderer();
+        });
+
+        return LoadingLayer::init(fromReload);
+    }
+};

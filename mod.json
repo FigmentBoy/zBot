@@ -17,7 +17,8 @@
     ],
 	"resources": {
 		"files": [
-			"resources/micross.ttf"
+			"resources/*.ttf",
+			"resources/*.zip"
 		]
 	},
 	"settings": {
@@ -29,5 +30,6 @@
 			"default": "",
 			"filter": "abcdef0123456789-"
 		}
-	}
+	},
+	"early-load": true
 }

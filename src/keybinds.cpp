@@ -3,6 +3,7 @@
 #include "gui.hpp"
 #include "zBot.hpp"
 #include <Geode/Bindings.hpp>
+#include <Geode/modify/LoadingLayer.hpp>
 using namespace geode::prelude;
 
 $execute {
