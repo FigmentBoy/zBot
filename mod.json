@@ -31,5 +31,6 @@
 			"filter": "abcdef0123456789-"
 		}
 	},
-	"early-load": true
+	"early-load": true,
+	"repository": "https://github.com/FigmentBoy/zBot"
 }
