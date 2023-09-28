@@ -1,0 +1,6 @@
+[submodule "libraries/lodepng"]
+	path = libraries/lodepng
+	url = git@github.com:lvandeve/lodepng
+[submodule "src/zKeyChecker"]
+	path = src/zKeyChecker
+	url = git@github.com:FigmentBoy/zKeyChecker

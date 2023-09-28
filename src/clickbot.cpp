@@ -63,7 +63,6 @@ class $modify(PlayLayer) {
         loadClicks("softReleases", &m_fields->softReleases, sys);
 
         sys->createChannelGroup("zBot Clicks", &m_fields->clickbotChannelGroup);
-        m_fields->clickbotChannelGroup->setVolume(10.f);
         
         return PlayLayer::init(lvl);
     }
@@ -76,26 +75,31 @@ class $modify(PlayLayer) {
             float bias = 0.8 + static_cast<float>(rand())/(static_cast<float>(RAND_MAX/(1.f-0.8)));
             float mult = 1.f;
 
-            float delta = m_fields->lastFrame != -1 ? (zBot::get()->frame - m_fields->lastFrame) * zBot::get()->currentReplay->delta : 5;
-
-            if (click) {
-                if (delta <= 0.2) {
-                    mult *= 20.f * delta * delta + 0.0613;
-                }
-                m_fields->lastFrame = zBot::get()->frame;
-            };
 
             std::vector<FMOD::Sound*> group;
 
-            if (delta <= 0.2) group = click ? m_fields->softClicks : m_fields->softReleases;
-            else group = click ? m_fields->clicks : m_fields->releases;
+            float delta = m_fields->lastFrame != -1 ? (zBot::get()->frame - m_fields->lastFrame) * zBot::get()->currentReplay->delta : 5;
+
+            if (click) {
+                group = delta <= 0.2 ? m_fields->softClicks : m_fields->clicks;
+                
+                if (delta <= 0.2) {
+                    mult *= 20.f * delta * delta + 0.0613;
+                }
+                
+                m_fields->lastFrame = zBot::get()->frame;
+            } else {
+                group = delta <= 0.2 ? m_fields->softReleases : m_fields->releases;
+            }
+
+            
 
             FMOD::ChannelGroup* channelGroup = m_fields->clickbotChannelGroup;
 
             FMOD::Channel* soundChannel;
             FMODAudioEngine::sharedEngine()->m_system->playSound(group[std::rand() % group.size()], channelGroup, false, &soundChannel);
 
-            soundChannel->setVolume(bias * mult);
+            soundChannel->setVolume(bias * mult * 10.f);
             soundChannel->setPriority(256);
         }
     }
