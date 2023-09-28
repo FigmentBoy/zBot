@@ -20,7 +20,7 @@ class $modify(PlayLayer) {
     }
 
     void updateVisibility() {
-        if (!zBot::get()->disableRender) {
+        if (zBot::get()->internalRenderer || !zBot::get()->disableRender) {
             PlayLayer::updateVisibility();
         }
     }
