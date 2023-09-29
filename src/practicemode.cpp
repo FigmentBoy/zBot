@@ -4,10 +4,15 @@
 #include <Geode/modify/GameObject.hpp>
 using namespace geode::prelude;
 
-typedef std::tuple<int, std::vector<std::vector<std::byte>>, int> checkpoint; // frame, saved pairs, activated objects index
-std::vector<checkpoint> checkpoints;
+struct Checkpoint {
+    int frame;
+    std::vector<std::vector<std::byte>> savedPairs;
+    int activatedObjectsCount;
+};
 
-const std::vector<std::pair<ptrdiff_t, size_t>> memberPairs = {
+std::vector<Checkpoint> checkpoints;
+
+const std::array memberPairs = {
     makeMemberPair(&PlayerObject::m_xVelocity),
     makeMemberPair(&PlayerObject::m_yVelocity),
     makeMemberPair(&PlayerObject::m_position),
@@ -30,14 +35,14 @@ class $modify(PlayLayer) {
 
     CheckpointObject* createCheckpoint() {
         zBot* mgr = zBot::get();
-        checkpoint cp;
+        Checkpoint cp;
         
-        std::get<0>(cp) = mgr->frame;
+        cp.frame = mgr->frame;
         for (auto pair : memberPairs) {
-            std::get<1>(cp).push_back(getValue(m_player1, pair));
-            std::get<1>(cp).push_back(getValue(m_player2, pair));
+            cp.savedPairs.push_back(getValue(m_player1, pair));
+            cp.savedPairs.push_back(getValue(m_player2, pair));
         }
-        std::get<2>(cp) = mgr->activatedObjects.size();
+        cp.activatedObjectsCount = mgr->activatedObjects.size();
 
         checkpoints.push_back(cp);
 
@@ -49,7 +54,7 @@ class $modify(PlayLayer) {
     void removeLastCheckpoint() {
         if (!checkpoints.empty()) {
             checkpoints.pop_back();
-            zBot::get()->respawnFrame = checkpoints.empty() ? 0 : std::get<0>(checkpoints.back());
+            zBot::get()->respawnFrame = checkpoints.empty() ? 0 : checkpoints.back().frame;
         }
         
         return PlayLayer::removeLastCheckpoint();
@@ -64,15 +69,15 @@ class $modify(PlayLayer) {
             return;
         }
 
-        checkpoint cp = checkpoints.back();
+        Checkpoint cp = checkpoints.back();
 
         int i = 0;
         for (auto pair : memberPairs) {
-            restoreValue(m_player1, pair, std::get<1>(cp)[i++]);
-            restoreValue(m_player2, pair, std::get<1>(cp)[i++]);
+            restoreValue(m_player1, pair, cp.savedPairs[i++]);
+            restoreValue(m_player2, pair, cp.savedPairs[i++]);
         }
 
-        mgr->activatedObjects.erase(mgr->activatedObjects.begin() + std::get<2>(cp), mgr->activatedObjects.end());
+        mgr->activatedObjects.erase(mgr->activatedObjects.begin() + cp.activatedObjectsCount, mgr->activatedObjects.end());
         for (auto object : mgr->activatedObjects) {
             object->m_hasBeenActivated = true;
         }
