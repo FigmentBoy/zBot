@@ -29,6 +29,9 @@ public:
     int respawnFrame;
     float runningTotal;
 
+    float player1RotationRate;
+    float player2RotationRate;
+
     int smoothFrames = 0;
 
     bool disableRender = false;
