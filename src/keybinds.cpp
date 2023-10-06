@@ -54,4 +54,19 @@ $execute {
 
         return ListenerResult::Propagate;
     }, InvokeBindFilter(nullptr, "advance_frame"_spr));
+
+    BindManager::get()->registerBindable({
+        "reset_level"_spr,
+        "Reset Level",
+        "Resets the Level",
+        { Keybind::create(KEY_R, Modifier::None) },
+        "zBot"
+    });
+
+    new EventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+        if (PlayLayer::get() && event->isDown() && !ImGui::GetIO().WantCaptureKeyboard)
+            PlayLayer::get()->resetLevel();
+
+        return ListenerResult::Propagate;
+    }, InvokeBindFilter(nullptr, "reset_level"_spr));
 }
