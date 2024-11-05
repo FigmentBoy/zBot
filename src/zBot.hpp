@@ -35,6 +35,8 @@ public:
     bool frameAdvance = false;
     bool doAdvance = false;
     bool internalRenderer = false;
+    bool speedHackAudio = true;
+
     
     double speed = 1;
     zReplay* currentReplay;

@@ -86,6 +86,7 @@ void RenderHackPanel() {
     ImGui::Begin("hacks", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
     
     ImGui::Checkbox("Frame Advance", &mgr->frameAdvance);
+    ImGui::Checkbox("Speedhack Audio", &mgr->speedHackAudio);
     // ImGui::Checkbox("Internal Renderer", &mgr->internalRenderer);
 
     ImGui::NewLine();

@@ -14,7 +14,7 @@ file(GLOB SOURCES
     src/playbackmanager.cpp
     src/recordmanager.cpp
     src/speedhackaudio.cpp
-    src/practicemode.cpp             # The old practice mode implementation
+    # src/practicemode.cpp             # The old practice mode implementation
     src/zKeyChecker/keychecker.cpp 
     # src/zPracticeMode/practicemode.cpp
 )
