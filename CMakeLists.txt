@@ -1,16 +1,27 @@
-cmake_minimum_required(VERSION 3.3.0)
+cmake_minimum_required(VERSION 3.21)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(zBot VERSION 3.0.0)
+project(zBot VERSION 3.0.0 LANGUAGES CXX)
 
 file(GLOB SOURCES
-	src/**.cpp
+	src/framecounting.cpp
+    src/gui.cpp
+    src/keybinds.cpp
+    src/physicsbypass.cpp
+    src/playbackmanager.cpp
+    src/recordmanager.cpp
+    src/speedhackaudio.cpp
+    src/practicemode.cpp             # The old practice mode implementation
+    src/zKeyChecker/keychecker.cpp 
+    # src/zPracticeMode/practicemode.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC
+target_include_directories(${PROJECT_NAME} PRIVATE
     src
 )
 
@@ -22,15 +33,15 @@ endif()
 
 add_subdirectory($ENV{GEODE_SDK} $ENV{GEODE_SDK}/build)
 
-CPMAddPackage("gh:matcool/gd-imgui-cocos#cb7290b4b9b529a395330cfbe01cb6a892828215")
+CPMAddPackage("gh:maxnut/GDReplayFormat#c70e8694401570d410acf43d02bed1764187389f")
+CPMAddPackage("gh:matcool/gd-imgui-cocos#324dc5d41c7d210d90732df071ca415aa3a34310")
+target_compile_definitions(${PROJECT_NAME} PRIVATE MOD_VERSION="${CMAKE_PROJECT_VERSION}")
 
 if (WIN32)
-target_link_libraries(${PROJECT_NAME} imgui-cocos)
+target_link_libraries(${PROJECT_NAME} imgui-cocos libGDR)
 elseif (APPLE)
-target_link_libraries(${PROJECT_NAME} imgui-cocos "-framework IOKit")
+target_link_libraries(${PROJECT_NAME} imgui-cocos libGDR "-framework IOKit")
 endif()
 
 
-create_geode_file(${PROJECT_NAME})
-
-add_compile_definitions(MOD_VERSION="v${CMAKE_PROJECT_VERSION}")
+setup_geode_mod(${PROJECT_NAME})

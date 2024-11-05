@@ -10,36 +10,32 @@ void GUI::renderReplayInfo() {
         ImGui::Text("Current Replay Name: ");
         ImGui::SameLine();
 
-        ImGui::TextColored({ 0,255,255,255 }, mgr->currentReplay->name.c_str());
+        ImGui::TextColored({ 0,255,255,255 }, "%s", mgr->currentReplay->name.c_str());
 
         ImGui::Text("Replay FPS: ");
         ImGui::SameLine();
-        ImGui::TextColored({ 0,255,255,255 }, "%.0f", 1 / mgr->currentReplay->delta);
+        ImGui::TextColored({ 0,255,255,255 }, "%.0f", mgr->currentReplay->framerate);
     }
 }
 
 void GUI::renderStateSwitcher() {
     zBot* mgr = zBot::get();
 
-    ImGui::RadioButton("Disable", reinterpret_cast<int *>(&mgr->state), 0);
+    ImGui::RadioButton("Disable", reinterpret_cast<int *>(&mgr->state), NONE);
     ImGui::SameLine();	
-    if (ImGui::RadioButton("Record", reinterpret_cast<int *>(&mgr->state), 1)) {
+    if (ImGui::RadioButton("Record", reinterpret_cast<int *>(&mgr->state), RECORD)) {
         if (PlayLayer::get() && !mgr->currentReplay) {
-            mgr->currentReplay = new Replay();
-            mgr->currentReplay->delta = CCDirector::sharedDirector()->getAnimationInterval();
-            mgr->currentReplay->name = GameManager::sharedState()->getPlayLayer()->m_level->m_levelName;
+            mgr->createNewReplay(GameManager::sharedState()->getPlayLayer()->m_level);
         }
 
         if (PlayLayer::get()) {
-            mgr->currentReplay->purgeInputs(mgr->frame);
+            mgr->currentReplay->purgeAfter(PlayLayer::get()->m_gameState.m_currentProgress);
         }
     }
     ImGui::SameLine();
-    if (ImGui::RadioButton("Playback", reinterpret_cast<int *>(&mgr->state), 2)) {
+    if (ImGui::RadioButton("Playback", reinterpret_cast<int *>(&mgr->state), PLAYBACK)) {
         if (!mgr->currentReplay) {
-            mgr->currentReplay = new Replay();
-            mgr->currentReplay->delta = CCDirector::sharedDirector()->getAnimationInterval();
-            mgr->currentReplay->name = "No Replay Loaded";
+            mgr->state = NONE;
         }
     }
 }
@@ -61,7 +57,7 @@ void RenderInfoPanel() {
     
     ImGui::Text("Frame: ");
     ImGui::SameLine();
-    ImGui::TextColored({ 0,255,255,255 }, "%i", PlayLayer::get() ? mgr->frame : 0);
+    ImGui::TextColored({ 0,255,255,255 }, "%i", PlayLayer::get() ? PlayLayer::get()->m_gameState.m_currentProgress : 0);
     
 
     static float tempFPS = 1 / ((float) CCDirector::sharedDirector()->getAnimationInterval());
@@ -90,7 +86,7 @@ void RenderHackPanel() {
     ImGui::Begin("hacks", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
     
     ImGui::Checkbox("Frame Advance", &mgr->frameAdvance);
-    ImGui::Checkbox("Internal Renderer", &mgr->internalRenderer);
+    // ImGui::Checkbox("Internal Renderer", &mgr->internalRenderer);
 
     ImGui::NewLine();
     ImGui::End();
@@ -103,7 +99,7 @@ void GUI::renderMainPanel() {
     ImGui::PushFont(l);
     ImGui::TextColored(ImVec4(1.f, 0.78f, 0.17f, 1.f), "zBot");
     ImGui::SameLine();
-    ImGui::TextColored(ImVec4(0.3f, 0.3f, 0.3f, 1.f), MOD_VERSION);
+    ImGui::TextColored(ImVec4(0.3f, 0.3f, 0.3f, 1.f), "v" MOD_VERSION);
     ImGui::PopFont();
 
     ImGui::PushFont(s);
@@ -117,14 +113,34 @@ void GUI::renderMainPanel() {
     zBot* mgr = zBot::get();
 
     if (ImGui::Button("Import")) {
-        Replay* rec = Replay::fromFile(location);
-        if (rec) mgr->currentReplay = rec;
+        if (!key) {
+            ImGui::OpenPopup("Can't Import!");
+        } else {
+            zReplay* rec = zReplay::fromFile(location);
+            if (rec) mgr->currentReplay = rec;
+        }
+    }
+
+    if (ImGui::BeginPopupModal("Can't Import!", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("Importing macros is a zBot Pro feature!\n\n"); 
+
+        if (ImGui::Button("Upgrade")) {
+            system("start https://zbot.figmentcoding.me/");
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("OK")) {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
     }
 
     ImGui::SameLine();
     if (ImGui::Button("Open Replays Folder")) {
         auto dir = Mod::get()->getSaveDir() / "replays";
-        if (ghc::filesystem::exists(dir) || ghc::filesystem::create_directory(dir)) {
+        if (std::filesystem::exists(dir) || std::filesystem::create_directory(dir)) {
             utils::file::openFolder(dir);
         }
     }

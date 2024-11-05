@@ -2,6 +2,8 @@
 #define _utils_hpp
 #include <vector>
 
+#define STRINGIFY(X) #X
+
 template<typename T, typename U> constexpr std::pair<ptrdiff_t, size_t> makeMemberPair(U T::*member)
 {
     return std::pair((ptrdiff_t)&((T*)nullptr->*member), sizeof(U));

@@ -2,37 +2,41 @@
 #include "replay.hpp"
 
 #include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/GJBaseGameLayer.hpp>
 using namespace geode::prelude;
 
-class $modify(PlayLayer) {
-    void update(float delta) {
-        zBot* mgr = zBot::get();
-
-        if (mgr->state == PLAYBACK) {
-            auto p1_inputs = mgr->currentReplay->p1_inputs.find(mgr->frame);
-            auto p2_inputs = mgr->currentReplay->p2_inputs.find(mgr->frame);
-
-            if (p1_inputs != mgr->currentReplay->p1_inputs.end()) {
-                for (bool click : p1_inputs->second) {
-                    if (click) {
-                        m_player1->pushButton((PlayerButton) 1);
-                    } else {
-                        m_player1->releaseButton((PlayerButton) 1);
-                    }
-                }
-            }
-
-            if (p2_inputs != mgr->currentReplay->p2_inputs.end()) {
-                for (bool click : p2_inputs->second) {
-                    if (click) {
-                        m_player2->pushButton((PlayerButton) 1);
-                    } else {
-                        m_player2->releaseButton((PlayerButton) 1);
-                    }
-                }
-            }
+int currIndex = 0;
+class $modify(zGJBaseGameLayer, GJBaseGameLayer) {
+    void processCommands(float delta) {
+        if (!zBot::get()->ignoreInput) {
+            GJBaseGameLayer::processCommands(delta);
         }
 
-        return PlayLayer::update(delta);
+        zBot* mgr = zBot::get();
+
+        if (mgr->state == PLAYBACK && mgr->currentReplay) {
+            while (currIndex < mgr->currentReplay->inputs.size() && 
+                   mgr->currentReplay->inputs[currIndex].frame <= m_gameState.m_currentProgress) {
+                
+                auto input = mgr->currentReplay->inputs[currIndex++];
+                log::info("Playback: frame: {}, button: {}, player2: {}, down: {}", input.frame, input.button, input.player2, input.down);
+                GJBaseGameLayer::handleButton(input.down, input.button, !input.player2);
+            }
+        }
+    }
+};
+
+class $modify(PlayLayer) {
+    void resetLevel() {
+        PlayLayer::resetLevel();
+
+        zBot* mgr = zBot::get();
+        if (mgr->state == PLAYBACK) {
+            currIndex = 0;
+            while (currIndex < mgr->currentReplay->inputs.size() && 
+                   mgr->currentReplay->inputs[currIndex].frame <= m_gameState.m_currentProgress) {
+                currIndex++;
+            }
+        }
     }
 };

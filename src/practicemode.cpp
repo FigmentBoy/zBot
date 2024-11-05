@@ -1,3 +1,4 @@
+// A simple practice mode implementation for the free version
 #include "zBot.hpp"
 #include "utils.hpp"
 #include <Geode/modify/PlayLayer.hpp>
@@ -5,7 +6,6 @@
 using namespace geode::prelude;
 
 struct Checkpoint {
-    int frame;
     std::vector<std::vector<std::byte>> savedPairs;
     int activatedObjectsCount;
 };
@@ -13,23 +13,17 @@ struct Checkpoint {
 std::vector<Checkpoint> checkpoints;
 
 const std::array memberPairs = {
-    makeMemberPair(&PlayerObject::m_xVelocity),
     makeMemberPair(&PlayerObject::m_yVelocity),
-    makeMemberPair(&PlayerObject::m_position),
-    makeMemberPair(&PlayerObject::m_rotation),
-    makeMemberPair(&PlayerObject::m_unk4D4), // isGoingDown
 };
 
 class $modify(PlayLayer) {
-    bool init(GJGameLevel* level) {
-        zBot::get()->activatedObjects.clear();
+    bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
         checkpoints.clear();
-        return PlayLayer::init(level);
+        return PlayLayer::init(level, useReplay, dontCreateObjects);
     }
 
     void togglePracticeMode(bool practice) {
         checkpoints.clear();
-        zBot::get()->respawnFrame = 0;
         PlayLayer::togglePracticeMode(practice);
     }
 
@@ -37,27 +31,21 @@ class $modify(PlayLayer) {
         zBot* mgr = zBot::get();
         Checkpoint cp;
         
-        cp.frame = mgr->frame;
         for (auto pair : memberPairs) {
             cp.savedPairs.push_back(getValue(m_player1, pair));
             cp.savedPairs.push_back(getValue(m_player2, pair));
         }
-        cp.activatedObjectsCount = mgr->activatedObjects.size();
-
         checkpoints.push_back(cp);
-
-        mgr->respawnFrame = mgr->frame;
 
         return PlayLayer::createCheckpoint();
     }
 
-    void removeLastCheckpoint() {
+    void removeCheckpoint(bool p0) {
         if (!checkpoints.empty()) {
             checkpoints.pop_back();
-            zBot::get()->respawnFrame = checkpoints.empty() ? 0 : checkpoints.back().frame;
         }
         
-        return PlayLayer::removeLastCheckpoint();
+        return PlayLayer::removeCheckpoint(p0);
     }
 
     void resetLevel() {
@@ -65,7 +53,6 @@ class $modify(PlayLayer) {
 
         zBot* mgr = zBot::get();
         if (checkpoints.empty()) {
-            mgr->activatedObjects.clear();
             return;
         }
 
@@ -76,27 +63,11 @@ class $modify(PlayLayer) {
             restoreValue(m_player1, pair, cp.savedPairs[i++]);
             restoreValue(m_player2, pair, cp.savedPairs[i++]);
         }
-
-        mgr->activatedObjects.erase(mgr->activatedObjects.begin() + cp.activatedObjectsCount, mgr->activatedObjects.end());
-        for (auto object : mgr->activatedObjects) {
-            object->m_hasBeenActivated = true;
-        }
-
     }
 
     void onExit() {
         PlayLayer::onExit();
         checkpoints.clear();
         zBot* mgr = zBot::get();
-        mgr->activatedObjects.clear();
-        mgr->respawnFrame = 0;
-    }
-};
-
-class $modify(GameObject) {
-    void activateObject() {
-        zBot* mgr = zBot::get();
-        GameObject::activateObject();
-        if (m_hasBeenActivated) mgr->activatedObjects.push_back(this);
     }
 };

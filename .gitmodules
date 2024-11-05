@@ -4,3 +4,6 @@
 [submodule "src/zKeyChecker"]
 	path = src/zKeyChecker
 	url = git@github.com:FigmentBoy/zKeyChecker
+[submodule "src/zPracticeMode"]
+	path = src/zPracticeMode
+	url = git@github.com:FigmentBoy/zPracticeMode

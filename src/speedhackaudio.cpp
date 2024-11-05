@@ -11,7 +11,6 @@ class $modify(FMODAudioEngine) {
         zBot* mgr = zBot::get();
 
         m_globalChannel->setPitch(mgr->speed);
-        m_currentSoundChannel->setPitch(mgr->speed);
     }
 };
 #endif

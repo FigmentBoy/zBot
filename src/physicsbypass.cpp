@@ -4,12 +4,10 @@
 using namespace geode::prelude;
 
 class $modify(PlayLayer) {
-    bool init(GJGameLevel* lvl) {
+    bool init(GJGameLevel* lvl, bool useReplay, bool dontCreateObjects) {
         zBot* mgr = zBot::get();
         mgr->runningTotal = 0;
-        mgr->justLoaded = true;
-
-        return PlayLayer::init(lvl);
+        return PlayLayer::init(lvl, useReplay, dontCreateObjects);
     }
 
     void togglePracticeMode(bool practice) {
@@ -19,26 +17,10 @@ class $modify(PlayLayer) {
         PlayLayer::togglePracticeMode(practice);
     }
 
-    void updateVisibility() {
+    void updateVisibility(float p0) {
         if (zBot::get()->internalRenderer || !zBot::get()->disableRender) {
-            PlayLayer::updateVisibility();
+            PlayLayer::updateVisibility(p0);
         }
-    }
-
-    void update(float delta) {
-        m_shouldTryToKick = false;
-        m_antiCheatPassed = true;
-
-        zBot* mgr = zBot::get();
-        mgr->justLoaded = false;
-        if (mgr->smoothFrames > 0) mgr->smoothFrames--;
-
-        PlayLayer::update(delta);
-    }
-
-    void resetLevel() {
-        if (m_isPracticeMode || m_isTestMode) zBot::get()->smoothFrames = 3;
-        PlayLayer::resetLevel();
     }
 };
 
@@ -54,7 +36,6 @@ class $modify(CCScheduler) {
         }
 
         mgr->runningTotal += delta;
-
         float newDelta = mgr->runningTotal;
 
         if (!PlayLayer::get() || !mgr->currentReplay) {
@@ -64,11 +45,11 @@ class $modify(CCScheduler) {
             }
             newDelta = CCDirector::sharedDirector()->getAnimationInterval();
         } else {
-            if ((mgr->currentReplay->delta) <= 0) {
+            if (1.f / (mgr->currentReplay->framerate) <= 0) {
                 mgr->runningTotal = 0;
                 return CCScheduler::update(delta * mgr->speed);
             }
-            newDelta = mgr->currentReplay->delta;
+            newDelta = 1.f / mgr->currentReplay->framerate;
         }
 
         if (mgr->justLoaded) {

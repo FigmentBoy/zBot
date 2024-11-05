@@ -2,41 +2,47 @@
 #include "replay.hpp"
 
 #include <Geode/modify/PlayLayer.hpp>
-#include <Geode/modify/PlayerObject.hpp>
+#include <Geode/modify/GJBaseGameLayer.hpp>
 using namespace geode::prelude;
 
-bool respawnInput(PlayerObject* player) {
-    // if (player->m_isShip || player->m_isBird || player->m_isBall || player->m_isDart || player->m_isRobot) return player->m_hasJustHeld;
-    // return player->m_isHolding; // Cube, Spider
+class $modify(GJBaseGameLayer) {
+    void handleButton(bool down, int button, bool p1) {
+        GJBaseGameLayer::handleButton(down, button, p1);
 
-    if (player->m_isHolding) player->m_hasJustHeld = true;
-    return player->m_hasJustHeld;
-}
+        zBot* mgr = zBot::get();
+
+        if (mgr->state == RECORD) {
+            bool p2 = !p1 && m_levelSettings->m_twoPlayerMode && m_gameState.m_isDualMode;
+            mgr->currentReplay->addInput(m_gameState.m_currentProgress, button, p2, down);
+        }
+    }
+};
 
 class $modify(PlayLayer) {
-    bool init(GJGameLevel* lvl) {        
+    bool init(GJGameLevel* lvl, bool useReplay, bool dontCreateObjects) {        
         zBot* mgr = zBot::get();
         
         if (mgr->state == RECORD) {
-            mgr->currentReplay = new Replay();
-            mgr->currentReplay->delta = CCDirector::sharedDirector()->getAnimationInterval();
-            mgr->currentReplay->name = lvl->m_levelName;
+            mgr->createNewReplay(lvl);
         }
 
-        return PlayLayer::init(lvl);
+        return PlayLayer::init(lvl, useReplay, dontCreateObjects);
     }
 
     void resetLevel() {
         PlayLayer::resetLevel();
 
-
         zBot* mgr = zBot::get();
 
         if (mgr->state == RECORD) {
-            mgr->currentReplay->purgeInputs(mgr->respawnFrame);
+            mgr->currentReplay->purgeAfter(m_gameState.m_currentProgress);
+            mgr->currentReplay->addInput(m_gameState.m_currentProgress + 1, as<int>(PlayerButton::Jump), false, false);
+            m_player1->m_isDashing = false;
 
-            mgr->currentReplay->addInput(mgr->respawnFrame, respawnInput(m_player1), true);
-            mgr->currentReplay->addInput(mgr->respawnFrame, respawnInput(m_player2), false);
+            if (m_gameState.m_isDualMode && m_levelSettings->m_twoPlayerMode) {
+                mgr->currentReplay->addInput(m_gameState.m_currentProgress + 1, as<int>(PlayerButton::Jump), true, false);
+                m_player2->m_isDashing = false;
+            }
         }
     }
 
@@ -53,18 +59,3 @@ class $modify(PlayLayer) {
     }
 };
 
-class $modify(PlayerObject) {
-    void pushButton(PlayerButton unk) {
-        zBot* mgr = zBot::get();
-        if (m_isInPlayLayer && mgr->state == RECORD) mgr->currentReplay->addInput(mgr->frame, true, !m_unk684);
-
-        PlayerObject::pushButton(unk);
-    }
-
-    void releaseButton(PlayerButton unk) {
-        zBot* mgr = zBot::get();
-        if (m_isInPlayLayer && mgr->state == RECORD) mgr->currentReplay->addInput(mgr->frame, false, !m_unk684);
-
-        PlayerObject::releaseButton(unk);
-    }
-};

@@ -25,10 +25,7 @@ public:
 
     bool fmodified = false;
 
-    int frame;
-    int respawnFrame;
     float runningTotal;
-
     int smoothFrames = 0;
 
     bool disableRender = false;
@@ -39,12 +36,15 @@ public:
     bool doAdvance = false;
     bool internalRenderer = false;
     
-    CCPoint previousPosition;
-    std::vector<GameObject*> activatedObjects;
-
     double speed = 1;
+    zReplay* currentReplay;
 
-    Replay* currentReplay;
+    void createNewReplay(GJGameLevel* level) {
+        currentReplay = new zReplay();
+        currentReplay->levelInfo.id = level->m_levelID;
+        currentReplay->levelInfo.name = level->m_levelName;
+        currentReplay->name = level->m_levelName;
+    }
 
     static auto* get() {
         static zBot* instance = new zBot();

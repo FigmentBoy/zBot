@@ -1,19 +1,25 @@
 {
-	"geode": "v1.3.4",
+	"geode": "3.9.0",
+	"gd": {
+		"win": "2.206",
+		"mac": "2.206",
+		"android": "2.206",
+		"ios": "2.206"
+	},
 	"version": "v3.0.0-beta.3",
 	"tags": [
-		"Player"
+		"utility"
 	],
 	"id": "fig.zbot",
 	"name": "zBot",
 	"developer": "fig",
 	"description": "Geometry Dash Replay Bot",
 	"dependencies": [
-        {
-            "id": "geode.custom-keybinds",
-            "version": "v1.1.2",
-            "required": true
-        }
+		{
+			"id": "geode.custom-keybinds",
+			"version": "v1.5.2",
+			"importance": "required"
+		}
     ],
 	"resources": {
 		"files": [
@@ -23,11 +29,12 @@
 	},
 	"settings": {
 		"product_key": {
+			"type": "string",
 			"name": "zBot Product Key",
 			"description": "Your zBot Product Key (see mod description for purchase information)",
-			"type": "string",
-			"match": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$|^$",
+
 			"default": "",
+			"match": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$|^$",
 			"filter": "abcdef0123456789-"
 		}
 	},
