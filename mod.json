@@ -21,6 +21,13 @@
 			"importance": "required"
 		}
     ],
+	"incompatibilities": [
+  		{
+    			"id": "syzzi.click_between_frames",
+    			"version": "*",
+				"importance": "breaking"
+  		}
+	],
 	"resources": {
 		"files": [
 			"resources/*.ttf",

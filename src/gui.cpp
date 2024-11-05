@@ -108,19 +108,28 @@ void GUI::renderMainPanel() {
     renderStateSwitcher();
 
     ImGui::NewLine();
-    ImGui::Text("Import Replay by name\n(must be in replays folder)");
-    ImGui::InputText("##replaylocation", location, sizeof(location));
-    
+
     zBot* mgr = zBot::get();
 
-    if (ImGui::Button("Import")) {
-        if (!key) {
-            ImGui::OpenPopup("Can't Import!");
-        } else {
-            zReplay* rec = zReplay::fromFile(location);
-            if (rec) mgr->currentReplay = rec;
+    if (key) {
+        ImGui::Text("Import Replay by name\n(must be in replays folder)");
+        ImGui::InputText("##replaylocation", location, sizeof(location));
+        
+        if (ImGui::Button("Import")) {
+            if (!key) {
+                ImGui::OpenPopup("Can't Import!");
+            } else {
+                zReplay* rec = zReplay::fromFile(location);
+                if (rec) mgr->currentReplay = rec;
+            }
+        }
+    } else {
+        ImGui::Text("Upgrade to import replays!");
+        if (ImGui::Button("Upgrade to Pro")) {
+            system("start https://zbot.figmentcoding.me/");
         }
     }
+    
 
     if (ImGui::BeginPopupModal("Can't Import!", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::Text("Importing macros is a zBot Pro feature!\n\n"); 
