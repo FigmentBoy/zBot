@@ -40,7 +40,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE MOD_VERSION="${CMAKE_PROJECT_
 if (WIN32)
 target_link_libraries(${PROJECT_NAME} imgui-cocos libGDR)
 elseif (APPLE)
-target_link_libraries(${PROJECT_NAME} imgui-cocos libGDR "-framework IOKit")
+target_link_libraries(${PROJECT_NAME} imgui-cocos libGDR CustomKeybinds "-framework IOKit")
 endif()
 
 
