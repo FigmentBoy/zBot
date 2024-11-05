@@ -6,13 +6,6 @@
 #include <Geode/modify/LoadingLayer.hpp>
 using namespace geode::prelude;
 
-#ifdef GEODE_IS_MACOS
-#define CommentType CommentTypeDummy
-#include <Cocoa/Cocoa.h>
-#include <objc/runtime.h>
-#undef CommentType
-#endif
-
 $execute {
     using namespace keybinds;
     zBot* mgr = zBot::get();
