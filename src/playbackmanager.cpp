@@ -43,9 +43,17 @@ class $modify(PlayLayer) {
         zBot* mgr = zBot::get();
         if (mgr->state == PLAYBACK) {
             currIndex = 0;
+            clickBotIndex = 0;
+
             while (currIndex < mgr->currentReplay->inputs.size() && 
                    mgr->currentReplay->inputs[currIndex].frame <= m_gameState.m_currentProgress) {
                 currIndex++;
+                clickBotIndex++;
+            }
+
+            while (clickBotIndex < mgr->currentReplay->inputs.size() && 
+                   mgr->currentReplay->inputs[clickBotIndex].frame <= m_gameState.m_currentProgress) {
+                clickBotIndex++;
             }
         }
     }
