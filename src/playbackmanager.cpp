@@ -6,6 +6,8 @@
 using namespace geode::prelude;
 
 int currIndex = 0;
+int clickBotIndex = 0;
+
 class $modify(zGJBaseGameLayer, GJBaseGameLayer) {
     void processCommands(float delta) {
         if (!zBot::get()->ignoreInput) {
@@ -19,8 +21,16 @@ class $modify(zGJBaseGameLayer, GJBaseGameLayer) {
                    mgr->currentReplay->inputs[currIndex].frame <= m_gameState.m_currentProgress) {
                 
                 auto input = mgr->currentReplay->inputs[currIndex++];
-                mgr->playSound(input.player2, input.button, input.down);
                 GJBaseGameLayer::handleButton(input.down, input.button, !input.player2);
+            }
+
+            int offset = mgr->currentReplay->framerate * 0.1;
+
+            while (clickBotIndex < mgr->currentReplay->inputs.size() && 
+                   mgr->currentReplay->inputs[clickBotIndex].frame <= m_gameState.m_currentProgress + offset) {
+                
+                auto click = mgr->currentReplay->inputs[clickBotIndex++];
+                mgr->playSound(click.player2, click.button, click.down);
             }
         }
     }
