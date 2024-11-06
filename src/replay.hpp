@@ -51,7 +51,9 @@ struct zReplay : gdr::Replay<zReplay, zInput> {
             f.close();
 
             zReplay* ret = new zReplay();
-            ret->importData(data);
+            *ret = zReplay::importData(data);
+            ret->name = fileName;
+
             return ret;
         }
 
