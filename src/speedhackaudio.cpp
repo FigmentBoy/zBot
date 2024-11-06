@@ -22,9 +22,5 @@ class $modify(FMODAudioEngine) {
         if (m_system->getMasterChannelGroup(&group) == FMOD_OK) {
             group->setPitch(pitch);
         }
-
-        #ifdef GEODE_IS_WINDOWS
-        m_globalChannel->setPitch(pitch);
-        #endif
     }
 };

@@ -19,7 +19,7 @@ class $modify(zGJBaseGameLayer, GJBaseGameLayer) {
                    mgr->currentReplay->inputs[currIndex].frame <= m_gameState.m_currentProgress) {
                 
                 auto input = mgr->currentReplay->inputs[currIndex++];
-                log::info("Playback: frame: {}, button: {}, player2: {}, down: {}", input.frame, input.button, input.player2, input.down);
+                mgr->playSound(input.player2, input.button, input.down);
                 GJBaseGameLayer::handleButton(input.down, input.button, !input.player2);
             }
         }

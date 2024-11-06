@@ -87,6 +87,29 @@ void RenderHackPanel() {
     
     ImGui::Checkbox("Frame Advance", &mgr->frameAdvance);
     ImGui::Checkbox("Speedhack Audio", &mgr->speedHackAudio);
+    if (ImGui::Checkbox("Clickbot", &mgr->clickbotEnabled) && !GUI::get()->key) {
+        mgr->clickbotEnabled = false;
+        ImGui::OpenPopup("Upgrade to Pro!");
+    }
+
+    ImGui::SetNextWindowSize(ImVec2(400, 125), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2 - 200, ImGui::GetIO().DisplaySize.y / 2 - 62.5), ImGuiCond_Always);
+    if (ImGui::BeginPopupModal("Upgrade to Pro!", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
+        ImGui::Text("You've discovered a pro feature!"); 
+
+        if (ImGui::Button("Upgrade")) {
+            system("start https://zbot.figmentcoding.me/");
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("OK")) {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
     // ImGui::Checkbox("Internal Renderer", &mgr->internalRenderer);
 
     ImGui::NewLine();
@@ -117,7 +140,7 @@ void GUI::renderMainPanel() {
         
         if (ImGui::Button("Import")) {
             if (!key) {
-                ImGui::OpenPopup("Can't Import!");
+                ImGui::OpenPopup("Upgrade to Pro!");
             } else {
                 zReplay* rec = zReplay::fromFile(location);
                 if (rec) mgr->currentReplay = rec;
@@ -125,26 +148,9 @@ void GUI::renderMainPanel() {
         }
     } else {
         ImGui::Text("Upgrade to import replays!");
-        if (ImGui::Button("Upgrade to Pro")) {
+        if (ImGui::Button("Upgrade to Pro!")) {
             system("start https://zbot.figmentcoding.me/");
         }
-    }
-    
-
-    if (ImGui::BeginPopupModal("Can't Import!", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("Importing macros is a zBot Pro feature!\n\n"); 
-
-        if (ImGui::Button("Upgrade")) {
-            system("start https://zbot.figmentcoding.me/");
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("OK")) {
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::EndPopup();
     }
 
     ImGui::SameLine();
@@ -153,6 +159,50 @@ void GUI::renderMainPanel() {
         if (std::filesystem::exists(dir) || std::filesystem::create_directory(dir)) {
             utils::file::openFolder(dir);
         }
+    }
+
+    if (!key) {
+        if (ImGui::Button("Enter Product Key")) {
+            ImGui::OpenPopup("Enter your product key:");
+        }
+    }
+
+    ImGui::SetNextWindowSize(ImVec2(400, 125), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2 - 200, ImGui::GetIO().DisplaySize.y / 2 - 62.5), ImGuiCond_Always);
+    if (ImGui::BeginPopupModal("Enter your product key:", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
+        static char key[37];
+
+        ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 20);
+        ImGui::InputText("##key", key, 36);
+
+        if (ImGui::Button("Cancel")) {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Paste")) {
+            if (const char* clipboard = ImGui::GetClipboardText()) {
+                strncpy_s(key, clipboard, 36);
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Submit")) {
+            std::string keyStr = key;
+            memset(key, 0, sizeof(key));
+
+            if (keyStr.length() < 36) {
+                keyCheckFailed = true;
+            } else {
+                Mod::get()->setSettingValue<std::string>("product_key", keyStr);
+            }
+
+            ImGui::CloseCurrentPopup();
+        }
+        
+        ImGui::EndPopup();
     }
 
     if (mgr->currentReplay) {
@@ -196,6 +246,22 @@ void GUI::renderer() {
     renderMainPanel();
     RenderInfoPanel();
     RenderHackPanel();
+
+    if (keyCheckFailed) {
+        keyCheckFailed = false;
+        ImGui::OpenPopup("Key Check Failed");
+    }
+
+    ImGui::SetNextWindowSize(ImVec2(500, 140), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2 - 250, ImGui::GetIO().DisplaySize.y / 2 - 70), ImGuiCond_Always);
+    if (ImGui::BeginPopupModal("Key Check Failed", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
+        ImGui::Text("Your key is invalid or has been linked to a different computer.");
+        ImGui::Text("Please enter a valid key or contact support.");
+        if (ImGui::Button("OK")) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
 }
 
 void GUI::setup() {

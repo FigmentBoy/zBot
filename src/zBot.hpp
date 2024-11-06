@@ -36,6 +36,7 @@ public:
     bool doAdvance = false;
     bool internalRenderer = false;
     bool speedHackAudio = true;
+    bool clickbotEnabled = false;
 
     
     double speed = 1;
@@ -52,6 +53,8 @@ public:
         static zBot* instance = new zBot();
         return instance;
     }
+
+    void playSound(bool p2, int button, bool down);
 };
 
 #endif

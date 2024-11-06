@@ -6,7 +6,7 @@
 		"android": "2.206",
 		"ios": "2.206"
 	},
-	"version": "v3.0.0-beta.6",
+	"version": "v3.0.0-beta.7",
 	"tags": [
 		"utility"
 	],
@@ -21,13 +21,6 @@
 			"importance": "required"
 		}
     ],
-	"incompatibilities": [
-  		{
-    			"id": "syzzi.click_between_frames",
-    			"version": "*",
-				"importance": "breaking"
-  		}
-	],
 	"resources": {
 		"files": [
 			"resources/*.ttf",

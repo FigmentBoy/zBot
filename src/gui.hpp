@@ -20,6 +20,7 @@ public:
 
     bool visible = false;
     bool key = false;
+    bool keyCheckFailed = false;
     bool callbackInit = false;
 
     void renderReplayInfo();
