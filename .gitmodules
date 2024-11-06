@@ -7,3 +7,6 @@
 [submodule "src/zPracticeMode"]
 	path = src/zPracticeMode
 	url = git@github.com:FigmentBoy/zPracticeMode
+[submodule "src/zClickbot"]
+	path = src/zClickbot
+	url = git@github.com:FigmentBoy/zClickbot
