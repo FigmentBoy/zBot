@@ -16,42 +16,27 @@ class $modify(PlayLayer) {
 class $modify(CCScheduler) {
     void update(float dt) {
         zBot* mgr = zBot::get();
-
-        if (mgr->speed <= 0) {
-            mgr->speed = 1;
-        }
-
-        CCScheduler::update(dt * mgr->speed);
+        return CCScheduler::update(dt * mgr->speed);
     }
 };
 
 class $modify(GJBaseGameLayer) {
-    void update(float delta) {
-        if (!m_started) {
-            return GJBaseGameLayer::update(delta);
-        }
-
-        if (m_resumeTimer > 0) {
-            GJBaseGameLayer::update(delta);
-            m_resumeTimer--;
-            return;
-        }
-
+    void update(float dt) {
         zBot* mgr = zBot::get();
 
-        m_extraDelta += delta;
-        float newDelta = 1.f / mgr->tps;
+        mgr->extraTPS += dt;
+        float newDelta = 1.f / (mgr->tps);
 
         if (mgr->frameAdvance) {
-            m_extraDelta = 0;
+            mgr->extraTPS = 0;
             if (!mgr->doAdvance) return;
             mgr->doAdvance = false;
             return GJBaseGameLayer::update(newDelta);
         }
 
-        if (m_extraDelta >= newDelta / mgr->speed) {
-            int times = (int)(m_extraDelta * mgr->speed / newDelta);
-            m_extraDelta -= newDelta / mgr->speed * times;
+        if (mgr->extraTPS >= newDelta) {
+            int times = std::floor(mgr->extraTPS / newDelta);       
+            mgr->extraTPS -= newDelta * times;
 
             mgr->disableRender = true;
             for (int i = 0; i < times - 1; i++) {
@@ -64,12 +49,10 @@ class $modify(GJBaseGameLayer) {
     }
 
     float getModifiedDelta(float dt) {
-        if (m_resumeTimer > 0 || !m_started) {
-            return dt;
-        }
+        GJBaseGameLayer::getModifiedDelta(dt);
 
         zBot* mgr = zBot::get();
-        double newDelta = 1.f / (mgr->tps * mgr->speed);
+        double newDelta = 1.f / mgr->tps;
 
         return newDelta;
     }

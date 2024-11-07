@@ -48,13 +48,13 @@ class $modify(PlayLayer) {
             clickBotIndex = 0;
 
             while (currIndex < mgr->currentReplay->inputs.size() && 
-                   mgr->currentReplay->inputs[currIndex].frame <= m_gameState.m_currentProgress) {
+                   mgr->currentReplay->inputs[currIndex].frame < m_gameState.m_currentProgress) {
                 currIndex++;
                 clickBotIndex++;
             }
 
             while (clickBotIndex < mgr->currentReplay->inputs.size() && 
-                   mgr->currentReplay->inputs[clickBotIndex].frame <= m_gameState.m_currentProgress) {
+                   mgr->currentReplay->inputs[clickBotIndex].frame < m_gameState.m_currentProgress) {
                 clickBotIndex++;
             }
         }

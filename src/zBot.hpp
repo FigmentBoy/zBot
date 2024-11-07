@@ -25,8 +25,7 @@ public:
 
     bool fmodified = false;
 
-    float runningTotal;
-    int smoothFrames = 0;
+    float extraTPS = 0.f;
 
     bool disableRender = false;
     bool ignoreBypass = false;
@@ -40,7 +39,7 @@ public:
 
     
     double speed = 1;
-    float tps = 240.f;
+    double tps = 240.f;
     zReplay* currentReplay;
 
     void createNewReplay(GJGameLevel* level) {

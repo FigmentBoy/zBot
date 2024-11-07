@@ -2,6 +2,7 @@
 #include "zBot.hpp"
 #include <Geode/Bindings.hpp>
 #include <Geode/modify/LoadingLayer.hpp>
+
 using namespace geode::prelude;
 
 void GUI::renderReplayInfo() {
@@ -143,7 +144,10 @@ void GUI::renderMainPanel() {
                 ImGui::OpenPopup("Upgrade to Pro!");
             } else {
                 zReplay* rec = zReplay::fromFile(location);
-                if (rec) mgr->currentReplay = rec;
+                if (rec) {
+                    mgr->currentReplay = rec;
+                    mgr->state = PLAYBACK;
+                }
             }
         }
     } else {
@@ -183,7 +187,11 @@ void GUI::renderMainPanel() {
 
         if (ImGui::Button("Paste")) {
             if (const char* clipboard = ImGui::GetClipboardText()) {
+                #ifdef GEODE_WINDOWS
+                strncpy_s(key, clipboard, 36);
+                #else
                 strncpy(key, clipboard, 36);
+                #endif
             }
         }
 
@@ -243,6 +251,9 @@ void GUI::renderer() {
     }
 
     if (!visible) return;
+    
+    PlatformToolbox::showCursor();
+    
     renderMainPanel();
     RenderInfoPanel();
     RenderHackPanel();
@@ -257,6 +268,22 @@ void GUI::renderer() {
     if (ImGui::BeginPopupModal("Key Check Failed", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
         ImGui::Text("Your key is invalid or has been linked to a different computer.");
         ImGui::Text("Please enter a valid key or contact support.");
+        if (ImGui::Button("OK")) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
+    if (showCBFMessage && !shownCBFMessage) {
+        shownCBFMessage = true;
+        ImGui::OpenPopup("CBF Detected!");
+    }
+
+    ImGui::SetNextWindowSize(ImVec2(500, 140), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2 - 250, ImGui::GetIO().DisplaySize.y / 2 - 70), ImGuiCond_Always);
+    if (ImGui::BeginPopupModal("CBF Detected!", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
+        ImGui::Text("Click between frames has been detected!");
+        ImGui::Text("Even when disabled in options, playback may be affected.");
         if (ImGui::Button("OK")) {
             ImGui::CloseCurrentPopup();
         }

@@ -22,6 +22,12 @@ $execute {
         if (event->isDown() && !ImGui::GetIO().WantCaptureKeyboard) {
             GUI* gui = GUI::get();
             gui->visible = !gui->visible;
+
+            auto pl = PlayLayer::get();
+
+            if (!gui->visible && pl && !pl->m_isPaused) {
+                PlatformToolbox::hideCursor();
+            }
         }
 
         return ListenerResult::Propagate;

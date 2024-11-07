@@ -18,6 +18,9 @@ public:
         return instance;
     }
 
+    bool showCBFMessage = false;
+    bool shownCBFMessage = false;
+    
     bool visible = false;
     bool key = false;
     bool keyCheckFailed = false;
