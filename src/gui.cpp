@@ -187,11 +187,7 @@ void GUI::renderMainPanel() {
 
         if (ImGui::Button("Paste")) {
             if (const char* clipboard = ImGui::GetClipboardText()) {
-                #ifdef GEODE_WINDOWS
-                strncpy_s(key, clipboard, 36);
-                #else
                 strncpy(key, clipboard, 36);
-                #endif
             }
         }
 
@@ -253,7 +249,7 @@ void GUI::renderer() {
     if (!visible) return;
     
     PlatformToolbox::showCursor();
-    
+
     renderMainPanel();
     RenderInfoPanel();
     RenderHackPanel();

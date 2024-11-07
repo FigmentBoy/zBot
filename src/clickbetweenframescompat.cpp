@@ -1,6 +1,6 @@
 #include <Geode/modify/PlayLayer.hpp>
 #include "zBot.hpp"
-#include "GUI.hpp"
+#include "gui.hpp"
 
 using namespace geode::prelude;
 
