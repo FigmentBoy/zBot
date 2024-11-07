@@ -5,53 +5,72 @@
 using namespace geode::prelude;
 
 class $modify(PlayLayer) {
-    bool init(GJGameLevel* lvl, bool useReplay, bool dontCreateObjects) {
-        zBot* mgr = zBot::get();
-        mgr->runningTotal = 0;
-        return PlayLayer::init(lvl, useReplay, dontCreateObjects);
-    }
-
-    void togglePracticeMode(bool practice) {
-        zBot* mgr = zBot::get();
-        mgr->runningTotal = 0;
-
-        PlayLayer::togglePracticeMode(practice);
-    }
-
-    void updateVisibility(float p0) {
-        if (zBot::get()->internalRenderer || !zBot::get()->disableRender) {
-            PlayLayer::updateVisibility(p0);
+    void updateVisibility(float dt) {
+        if (zBot::get()->disableRender) {
+            return;
         }
+        PlayLayer::updateVisibility(dt);
+    }
+};
+
+class $modify(CCScheduler) {
+    void update(float dt) {
+        zBot* mgr = zBot::get();
+
+        if (mgr->speed <= 0) {
+            mgr->speed = 1;
+        }
+
+        CCScheduler::update(dt * mgr->speed);
     }
 };
 
 class $modify(GJBaseGameLayer) {
-    float getModifiedDelta(float dt) {
-        zBot* mgr = zBot::get();
-
-        if (mgr->frameAdvance && m_resumeTimer <= 0) {
-            if (mgr->doAdvance) {
-                mgr->doAdvance = false;
-                return static_cast<float>(1.f / mgr->tps);
-            } else {
-                return 0.f;
-            }
-        }
-
-        double delta = 1.f / (mgr->tps * mgr->speed);
-
-        if (m_gameState.m_timeWarp > 1.f) {
-            delta *= m_gameState.m_timeWarp;
+    void update(float delta) {
+        if (!m_started) {
+            return GJBaseGameLayer::update(delta);
         }
 
         if (m_resumeTimer > 0) {
+            GJBaseGameLayer::update(delta);
             m_resumeTimer--;
-            dt = 0;
+            return;
         }
 
-        double total = dt + m_extraDelta;
-        int steps = std::round(total / delta);
-        m_extraDelta = total - delta * steps;
-        return static_cast<float>(delta * steps * mgr->speed);
+        zBot* mgr = zBot::get();
+
+        m_extraDelta += delta;
+        float newDelta = 1.f / mgr->tps;
+
+        if (mgr->frameAdvance) {
+            m_extraDelta = 0;
+            if (!mgr->doAdvance) return;
+            mgr->doAdvance = false;
+            return GJBaseGameLayer::update(newDelta);
+        }
+
+        if (m_extraDelta >= newDelta / mgr->speed) {
+            int times = (int)(m_extraDelta * mgr->speed / newDelta);
+            m_extraDelta -= newDelta / mgr->speed * times;
+
+            mgr->disableRender = true;
+            for (int i = 0; i < times - 1; i++) {
+                GJBaseGameLayer::update(newDelta);
+            }
+
+            mgr->disableRender = false;
+            return GJBaseGameLayer::update(newDelta);
+        } 
+    }
+
+    float getModifiedDelta(float dt) {
+        if (m_resumeTimer > 0 || !m_started) {
+            return dt;
+        }
+
+        zBot* mgr = zBot::get();
+        double newDelta = 1.f / (mgr->tps * mgr->speed);
+
+        return newDelta;
     }
 };
