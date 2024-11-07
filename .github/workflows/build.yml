@@ -24,6 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.ZBOT_GITHUB_PAT }}
           submodules: 'recursive'
 
       - name: Build the mod
