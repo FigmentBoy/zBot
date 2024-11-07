@@ -45,7 +45,7 @@ class $modify(GJBaseGameLayer) {
         }
 
         if (m_resumeTimer > 0) {
-            --m_resumeTimer;
+            m_resumeTimer--;
             dt = 0;
         }
 
