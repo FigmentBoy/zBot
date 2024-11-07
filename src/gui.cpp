@@ -12,7 +12,7 @@ void GUI::renderReplayInfo() {
 
         ImGui::TextColored({ 0,255,255,255 }, "%s", mgr->currentReplay->name.c_str());
 
-        ImGui::Text("Replay FPS: ");
+        ImGui::Text("Replay TPS: ");
         ImGui::SameLine();
         ImGui::TextColored({ 0,255,255,255 }, "%.0f", mgr->currentReplay->framerate);
     }
@@ -47,9 +47,9 @@ void RenderInfoPanel() {
     ImGui::SetNextWindowPos(ImVec2(385, 10), ImGuiCond_Once);
     ImGui::Begin("utilities", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
     
-    ImGui::Text("FPS: ");
+    ImGui::Text("TPS: ");
     ImGui::SameLine();
-    ImGui::TextColored({ 0,255,255,255 }, "%.0f", 1 / (CCDirector::sharedDirector()->getAnimationInterval()));
+    ImGui::TextColored({ 0,255,255,255 }, "%.0f", mgr->tps);
 
     ImGui::Text("Speed: ");
     ImGui::SameLine();
@@ -60,11 +60,11 @@ void RenderInfoPanel() {
     ImGui::TextColored({ 0,255,255,255 }, "%i", PlayLayer::get() ? PlayLayer::get()->m_gameState.m_currentProgress : 0);
     
 
-    static float tempFPS = 1 / ((float) CCDirector::sharedDirector()->getAnimationInterval());
-    ImGui::Text("Set FPS: ");
-    ImGui::InputFloat("##fps", &tempFPS);
-    if (ImGui::Button("Apply FPS")) {
-        CCDirector::sharedDirector()->setAnimationInterval(1 / tempFPS);
+    static float tempTPS = mgr->tps;
+    ImGui::Text("Set TPS: ");
+    ImGui::InputFloat("##tps", &tempTPS);
+    if (ImGui::Button("Apply TPS")) {
+        if (mgr->state == NONE || !PlayLayer::get()) mgr->tps = tempTPS;
     }
 
     ImGui::NewLine();

@@ -40,6 +40,7 @@ public:
 
     
     double speed = 1;
+    float tps = 240.f;
     zReplay* currentReplay;
 
     void createNewReplay(GJGameLevel* level) {
@@ -47,6 +48,7 @@ public:
         currentReplay->levelInfo.id = level->m_levelID;
         currentReplay->levelInfo.name = level->m_levelName;
         currentReplay->name = level->m_levelName;
+        currentReplay->framerate = tps;
     }
 
     static auto* get() {

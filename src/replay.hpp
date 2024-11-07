@@ -62,7 +62,7 @@ struct zReplay : gdr::Replay<zReplay, zInput> {
 
     void purgeAfter(int frame) {
         inputs.erase(std::remove_if(inputs.begin(), inputs.end(), [frame](zInput& input) {
-            return input.frame > frame;
+            return input.frame >= frame;
         }), inputs.end());
     }
 

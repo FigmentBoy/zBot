@@ -18,7 +18,7 @@ class $modify(zGJBaseGameLayer, GJBaseGameLayer) {
 
         if (mgr->state == PLAYBACK && mgr->currentReplay) {
             while (currIndex < mgr->currentReplay->inputs.size() && 
-                   mgr->currentReplay->inputs[currIndex].frame <= m_gameState.m_currentProgress) {
+                   mgr->currentReplay->inputs[currIndex].frame < m_gameState.m_currentProgress) {
                 
                 auto input = mgr->currentReplay->inputs[currIndex++];
                 GJBaseGameLayer::handleButton(input.down, input.button, !input.player2);
@@ -27,7 +27,7 @@ class $modify(zGJBaseGameLayer, GJBaseGameLayer) {
             int offset = mgr->currentReplay->framerate * 0.1;
 
             while (clickBotIndex < mgr->currentReplay->inputs.size() && 
-                   mgr->currentReplay->inputs[clickBotIndex].frame <= m_gameState.m_currentProgress + offset) {
+                   mgr->currentReplay->inputs[clickBotIndex].frame < m_gameState.m_currentProgress + offset) {
                 
                 auto click = mgr->currentReplay->inputs[clickBotIndex++];
                 mgr->playSound(click.player2, click.button, click.down);
@@ -42,6 +42,8 @@ class $modify(PlayLayer) {
 
         zBot* mgr = zBot::get();
         if (mgr->state == PLAYBACK) {
+            mgr->tps = mgr->currentReplay->framerate;
+
             currIndex = 0;
             clickBotIndex = 0;
 

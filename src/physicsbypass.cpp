@@ -1,6 +1,7 @@
 #include "zBot.hpp"
 #include <Geode/modify/CCScheduler.hpp>
 #include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/GJBaseGameLayer.hpp>
 using namespace geode::prelude;
 
 class $modify(PlayLayer) {
@@ -24,57 +25,33 @@ class $modify(PlayLayer) {
     }
 };
 
-class $modify(CCScheduler) {
-    void update(float delta) {
+class $modify(GJBaseGameLayer) {
+    float getModifiedDelta(float dt) {
         zBot* mgr = zBot::get();
 
-        mgr->speed = mgr->speed <= 0 ? 1 : mgr->speed;
-
-        if (mgr->ignoreBypass || !PlayLayer::get()) {
-            mgr->runningTotal = 0;
-            return CCScheduler::update(delta * mgr->speed);
-        }
-
-        mgr->runningTotal += delta;
-        float newDelta = mgr->runningTotal;
-
-        if (!PlayLayer::get() || !mgr->currentReplay) {
-            if (CCDirector::sharedDirector()->getAnimationInterval() <= 0) {
-                mgr->runningTotal = 0;
-                return CCScheduler::update(delta * mgr->speed);
+        if (mgr->frameAdvance && m_resumeTimer <= 0) {
+            if (mgr->doAdvance) {
+                mgr->doAdvance = false;
+                return static_cast<float>(1.f / mgr->tps);
+            } else {
+                return 0.f;
             }
-            newDelta = CCDirector::sharedDirector()->getAnimationInterval();
-        } else {
-            if (1.f / (mgr->currentReplay->framerate) <= 0) {
-                mgr->runningTotal = 0;
-                return CCScheduler::update(delta * mgr->speed);
-            }
-            newDelta = 1.f / mgr->currentReplay->framerate;
         }
 
-        if (mgr->justLoaded) {
-            mgr->runningTotal = 0;
-            return CCScheduler::update(newDelta);
+        double delta = 1.f / (mgr->tps * mgr->speed);
+
+        if (m_gameState.m_timeWarp > 1.f) {
+            delta *= m_gameState.m_timeWarp;
         }
 
-        if (PlayLayer::get() && mgr->frameAdvance) {
-            mgr->runningTotal = 0;
-            if (!mgr->doAdvance) return;
-            mgr->doAdvance = false;
-            return CCScheduler::update(newDelta);
+        if (m_resumeTimer > 0) {
+            --m_resumeTimer;
+            dt = 0;
         }
 
-        if (mgr->runningTotal >= newDelta / mgr->speed) {
-            int times = (int)(mgr->runningTotal * mgr->speed / newDelta);
-            mgr->runningTotal -= newDelta / mgr->speed * times;
-
-            mgr->disableRender = true;
-            for (int i = 0; i < times - 1; i++) {
-                CCScheduler::update(newDelta);
-            }
-
-            mgr->disableRender = false;
-            return CCScheduler::update(newDelta);
-        } 
+        double total = dt + m_extraDelta;
+        int steps = std::round(total / delta);
+        m_extraDelta = total - delta * steps;
+        return static_cast<float>(delta * steps * mgr->speed);
     }
 };
