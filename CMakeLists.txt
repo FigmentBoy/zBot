@@ -34,8 +34,8 @@ endif()
 
 add_subdirectory($ENV{GEODE_SDK} $ENV{GEODE_SDK}/build)
 
-CPMAddPackage("gh:maxnut/GDReplayFormat#c70e8694401570d410acf43d02bed1764187389f")
-CPMAddPackage("gh:matcool/gd-imgui-cocos#324dc5d41c7d210d90732df071ca415aa3a34310")
+CPMAddPackage("gh:maxnut/GDReplayFormat#9c32b5529067901418ea6e4dfbd36437dc8712bc")
+CPMAddPackage("gh:matcool/gd-imgui-cocos#8973953519fa05d81c61634e585559ab87ca559d")
 target_compile_definitions(${PROJECT_NAME} PRIVATE MOD_VERSION="${CMAKE_PROJECT_VERSION}")
 
 if (WIN32)
