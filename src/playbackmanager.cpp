@@ -9,9 +9,9 @@ int currIndex = 0;
 int clickBotIndex = 0;
 
 class $modify(zGJBaseGameLayer, GJBaseGameLayer) {
-    void processCommands(float delta) {
+    void processCommands(float delta, bool isHalfTick, bool isLastTick) {
         if (!zBot::get()->ignoreInput) {
-            GJBaseGameLayer::processCommands(delta);
+            GJBaseGameLayer::processCommands(delta, isHalfTick, isLastTick);
         }
 
         zBot* mgr = zBot::get();

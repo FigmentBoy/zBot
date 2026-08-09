@@ -1,10 +1,8 @@
 {
-	"geode": "4.0.0",
+	"geode": "5.8.2",
 	"gd": {
-		"win": "2.2074",
-		"mac": "2.2074",
-		"android": "2.206",
-		"ios": "2.206"
+		"win": "2.2081",
+		"mac": "2.2081"
 	},
 	"version": "v3.0.0-beta.11",
 	"tags": [
@@ -14,13 +12,6 @@
 	"name": "zBot",
 	"developer": "fig",
 	"description": "Geometry Dash Replay Bot",
-	"dependencies": [
-		{
-			"id": "geode.custom-keybinds",
-			"version": "v1.10.0",
-			"importance": "required"
-		}
-    ],
 	"resources": {
 		"files": [
 			"resources/*.ttf",
@@ -32,10 +23,30 @@
 			"type": "string",
 			"name": "zBot Product Key",
 			"description": "Your zBot Product Key (see mod description for purchase information)",
-
 			"default": "",
 			"match": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$|^$",
 			"filter": "abcdef0123456789-"
+		},
+		"gui_toggle": {
+			"type": "keybind",
+			"name": "zBot Toggle",
+			"description": "Toggles the zBot GUI",
+			"default": "B",
+			"category": "universal"
+		},
+		"frame_advance": {
+			"type": "keybind",
+			"name": "Toggle Frame Advance",
+			"description": "Toggles frame advance",
+			"default": "V",
+			"category": "universal"
+		},
+		"advance_frame": {
+			"type": "keybind",
+			"name": "Frame Advance",
+			"description": "Advances the game by one frame (only works when the game is paused)",
+			"default": "C",
+			"category": "universal"
 		}
 	},
 	"early-load": true,

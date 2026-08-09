@@ -36,11 +36,11 @@ class $modify(PlayLayer) {
 
         if (mgr->state == RECORD) {
             mgr->currentReplay->purgeAfter(m_gameState.m_currentProgress);
-            mgr->currentReplay->addInput(m_gameState.m_currentProgress, as<int>(PlayerButton::Jump), false, false);
+            mgr->currentReplay->addInput(m_gameState.m_currentProgress, static_cast<int>(PlayerButton::Jump), false, false);
             m_player1->m_isDashing = false;
 
             if (m_gameState.m_isDualMode && m_levelSettings->m_twoPlayerMode) {
-                mgr->currentReplay->addInput(m_gameState.m_currentProgress, as<int>(PlayerButton::Jump), true, false);
+                mgr->currentReplay->addInput(m_gameState.m_currentProgress, static_cast<int>(PlayerButton::Jump), true, false);
                 m_player2->m_isDashing = false;
             }
         }
