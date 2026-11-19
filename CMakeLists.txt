@@ -39,10 +39,11 @@ CPMAddPackage("gh:matcool/gd-imgui-cocos#b93f08ccef778a53ebba09b20c347f6a6398011
 target_compile_definitions(${PROJECT_NAME} PRIVATE MOD_VERSION="${CMAKE_PROJECT_VERSION}")
 
 if (WIN32)
-target_link_libraries(${PROJECT_NAME} imgui-cocos libGDR)
+    target_link_libraries(${PROJECT_NAME} imgui-cocos libGDR)
 elseif (APPLE)
-target_link_libraries(${PROJECT_NAME} imgui-cocos libGDR "-framework IOKit")
+    target_link_libraries(${PROJECT_NAME} imgui-cocos libGDR "-framework IOKit")
+elseif (ANDROID)
+    target_link_libraries(${PROJECT_NAME} imgui-cocos libGDR)
 endif()
-
 
 setup_geode_mod(${PROJECT_NAME})
